@@ -10,6 +10,11 @@ import {
 import { votehubLog } from "../votehub/log";
 import type { RaceIndexDoc, StoredPoll, VoteHubSyncDoc } from "../votehub/types";
 
+/** Firestore document paths cannot contain `/`; VoteHub IDs sometimes do. */
+export function firestoreDocumentId(id: string): string {
+  return id.replaceAll("/", "%2F");
+}
+
 function chunk<T>(items: T[], size: number): T[][] {
   const out: T[][] = [];
   for (let i = 0; i < items.length; i += size) out.push(items.slice(i, i + size));
@@ -43,10 +48,11 @@ export async function loadExistingPolls(
 ): Promise<Map<string, DocumentData>> {
   const existing = new Map<string, DocumentData>();
   for (const group of chunk(ids, FIRESTORE_GETALL_CHUNK)) {
-    const refs = group.map((id) => db.collection(POLLS_COLLECTION).doc(id));
+    const refs = group.map((id) => pollDocRef(db, id));
     const snaps = await db.getAll(...refs);
-    for (const snap of snaps) {
-      if (snap.exists) existing.set(snap.id, snap.data() ?? {});
+    for (let i = 0; i < snaps.length; i += 1) {
+      const snap = snaps[i];
+      if (snap.exists) existing.set(group[i], snap.data() ?? {});
     }
   }
   return existing;
@@ -95,7 +101,7 @@ export async function commitWrites(
 }
 
 export function pollDocRef(db: Firestore, id: string) {
-  return db.collection(POLLS_COLLECTION).doc(id);
+  return db.collection(POLLS_COLLECTION).doc(firestoreDocumentId(id));
 }
 
 export function raceDocRef(db: Firestore, raceKey: string) {
