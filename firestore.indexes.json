@@ -1,0 +1,41 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "polls",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "race_key", "order": "ASCENDING" },
+        { "fieldPath": "end_date", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "polls",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "race_type", "order": "ASCENDING" },
+        { "fieldPath": "end_date", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "polls",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "election_year", "order": "ASCENDING" },
+        { "fieldPath": "race_type", "order": "ASCENDING" },
+        { "fieldPath": "end_date", "order": "DESCENDING" }
+      ]
+    }
+  ],
+  "fieldOverrides": [
+    {
+      "collectionGroup": "polls",
+      "fieldPath": "answers",
+      "indexes": []
+    },
+    {
+      "collectionGroup": "polls",
+      "fieldPath": "sponsors",
+      "indexes": []
+    }
+  ]
+}

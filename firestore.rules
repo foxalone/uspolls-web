@@ -1,0 +1,96 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // ===============================================================
+    // Assumed Data Model
+    // ===============================================================
+    //
+    // Collection: polls/{votehub_poll_id}
+    // Written only by the server-side VoteHub importer (Admin SDK).
+    // Public pages read through ISR / server cache, never from the browser.
+    //
+    // Required fields:
+    // - id: string
+    // - poll_type: string
+    // - subject: string
+    // - answers: list
+    // - source: "votehub"
+    // - race_key: string
+    // - source_hash: string
+    // - imported_at: string
+    // - updated_at: string
+    //
+    // Collection: races/{race_key}
+    // Index only: race_key, election_year, race_type, state, district,
+    // subject, last_poll_date, poll_count, updated_at.
+    // Does not embed poll objects.
+    //
+    // Collection: system/votehub_sync
+    // Importer watermark / lock. Admin SDK only.
+    // ===============================================================
+
+    function isValidPoll() {
+      return request.resource.data.keys().hasAll([
+        'id',
+        'poll_type',
+        'subject',
+        'answers',
+        'source',
+        'race_key',
+        'source_hash',
+        'imported_at',
+        'updated_at',
+      ])
+      && request.resource.data.id is string
+      && request.resource.data.poll_type is string
+      && request.resource.data.subject is string
+      && request.resource.data.answers is list
+      && request.resource.data.source == 'votehub'
+      && request.resource.data.race_key is string
+      && request.resource.data.source_hash is string
+      && request.resource.data.imported_at is string
+      && request.resource.data.updated_at is string;
+    }
+
+    function isValidRace() {
+      return request.resource.data.keys().hasAll([
+        'race_key',
+        'race_type',
+        'poll_count',
+        'updated_at',
+      ])
+      && request.resource.data.race_key is string
+      && request.resource.data.race_type is string
+      && request.resource.data.poll_count is int
+      && request.resource.data.updated_at is string;
+    }
+
+    function isValidSync() {
+      return request.resource.data.keys().hasAll(['status', 'last_attempt'])
+      && request.resource.data.status is string
+      && request.resource.data.last_attempt is string;
+    }
+
+    match /polls/{pollId} {
+      allow read: if false;
+      allow create, update: if false && isValidPoll();
+      allow delete: if false;
+    }
+
+    match /races/{raceKey} {
+      allow read: if false;
+      allow create, update: if false && isValidRace();
+      allow delete: if false;
+    }
+
+    match /system/{docId} {
+      allow read: if false;
+      allow create, update: if false && isValidSync();
+      allow delete: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

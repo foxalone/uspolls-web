@@ -8,9 +8,12 @@
     "lint": "next lint",
     "typecheck": "tsc --noEmit --incremental false",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "sync:votehub": "tsx scripts/sync-votehub.ts",
+    "test:votehub": "tsx --test src/lib/votehub/*.test.ts"
   },
   "dependencies": {
+    "firebase-admin": "^13.5.0",
     "next": "^15.3.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
@@ -21,6 +24,7 @@
     "@types/react-dom": "^19.1.2",
     "eslint": "^9.39.5",
     "eslint-config-next": "^15.5.14",
+    "tsx": "^4.20.5",
     "typescript": "^5.8.3"
   }
 }
