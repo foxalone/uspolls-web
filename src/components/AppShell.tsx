@@ -18,8 +18,12 @@ export function AppShell({ children }: AppShellProps) {
           prediction markets, and campaign metrics for the November 2026 midterms.
         </p>
         <p>
-          Informational only. Not political advice, not a forecast you should bet
-          on, and not an official election result.
+          Polling data from{" "}
+          <a href="https://votehub.com/polls/api/" rel="noreferrer" target="_blank">
+            VoteHub
+          </a>{" "}
+          (CC BY 4.0). Informational only. Not political advice, not a forecast
+          you should bet on, and not an official election result.
         </p>
       </footer>
     </div>

@@ -1,15 +1,18 @@
-import { CHAMBERS, GENERIC_BALLOT, type ChamberId } from "../data/midterms2026";
+import { CHAMBERS, type ChamberId } from "../data/midterms2026";
+import { formatMargin, type HomePollSnapshot } from "../lib/polls/summarize";
 import { ChamberToggle } from "./ChamberToggle";
 
 type HomeChamberBattleProps = {
   chamber: ChamberId;
   onChamberChange: (value: ChamberId) => void;
+  polls: HomePollSnapshot;
 };
 
-export function HomeChamberBattle({ chamber, onChamberChange }: HomeChamberBattleProps) {
+export function HomeChamberBattle({ chamber, onChamberChange, polls }: HomeChamberBattleProps) {
   const house = CHAMBERS.house;
   const senate = CHAMBERS.senate;
   const active = CHAMBERS[chamber];
+  const ballot = polls.genericBallot;
 
   return (
     <section className="panel chamber-battle" id="chambers">
@@ -26,8 +29,12 @@ export function HomeChamberBattle({ chamber, onChamberChange }: HomeChamberBattl
           ‹
         </button>
         <div>
-          <strong>{GENERIC_BALLOT.updated}</strong>
-          <span>{GENERIC_BALLOT.source} · generic ballot D+{GENERIC_BALLOT.margin}</span>
+          <strong>{ballot?.latestEndDate || "VoteHub"}</strong>
+          <span>
+            {ballot
+              ? `Simple generic-ballot average ${formatMargin(ballot.margin)} · ${ballot.pollCount} polls`
+              : "Generic ballot pending import"}
+          </span>
         </div>
         <button aria-label="Next snapshot" className="chamber-battle__arrow" type="button">
           ›

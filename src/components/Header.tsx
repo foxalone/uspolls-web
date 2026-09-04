@@ -1,11 +1,14 @@
+import Link from "next/link";
+import { useRouter } from "next/router";
 import { formatUsLongDate } from "../lib/electionCalendar";
 
 const NAV = [
-  { href: "#monitor", label: "Monitor", icon: "home" },
-  { href: "#chambers", label: "Chambers", icon: "seats" },
-  { href: "#odds", label: "Odds", icon: "odds" },
-  { href: "#headlines", label: "News", icon: "news" },
-  { href: "#midterms", label: "Midterms 2026", icon: "ballot", accent: true },
+  { href: "/", label: "Monitor", icon: "home" },
+  { href: "/#polls", label: "Polls", icon: "ballot" },
+  { href: "/#chambers", label: "Chambers", icon: "seats" },
+  { href: "/#odds", label: "Odds", icon: "odds" },
+  { href: "/#headlines", label: "News", icon: "news" },
+  { href: "/admin", label: "Admin", icon: "admin", accent: true },
 ];
 
 function NavIcon({ name }: { name: string }) {
@@ -15,6 +18,16 @@ function NavIcon({ name }: { name: string }) {
         <rect x="5" y="3.5" width="14" height="17" rx="2.2" />
         <path d="M8.2 9.2h7.6M8.2 12.6h7.6M8.2 16h5.2" />
         <path d="M9.1 6.4l1.2 1.2 2.4-2.5" />
+      </svg>
+    );
+  }
+
+  if (name === "admin") {
+    return (
+      <svg aria-hidden="true" viewBox="0 0 24 24">
+        <rect x="4.5" y="6" width="15" height="12" rx="2" />
+        <path d="M8 12h8M8 15h5" />
+        <circle cx="9" cy="9.2" r="0.9" />
       </svg>
     );
   }
@@ -55,6 +68,8 @@ function NavIcon({ name }: { name: string }) {
 
 export function Header() {
   const today = formatUsLongDate(new Date());
+  const router = useRouter();
+  const onAdmin = router.pathname === "/admin";
 
   return (
     <header className="site-header">
@@ -63,7 +78,7 @@ export function Header() {
         <span className="site-header__lang">EN</span>
       </div>
       <div className="site-header__main">
-        <a className="brand" href="#monitor">
+        <Link className="brand" href="/">
           <span className="brand__mark" aria-hidden="true">
             US
           </span>
@@ -71,18 +86,21 @@ export function Header() {
             <strong>US Polls</strong>
             <em>House · Senate · 2026</em>
           </span>
-        </a>
+        </Link>
         <nav aria-label="Primary" className="site-nav">
-          {NAV.map((item) => (
-            <a
-              className={`site-nav-link${item.accent ? " is-accent" : ""}`}
-              href={item.href}
-              key={item.href}
-            >
-              <NavIcon name={item.icon} />
-              <span>{item.label}</span>
-            </a>
-          ))}
+          {NAV.map((item) => {
+            const active = item.href === "/admin" ? onAdmin : !onAdmin && item.href === "/";
+            return (
+              <Link
+                className={`site-nav-link${item.accent ? " is-accent" : ""}${active ? " is-active" : ""}`}
+                href={item.href}
+                key={item.href}
+              >
+                <NavIcon name={item.icon} />
+                <span>{item.label}</span>
+              </Link>
+            );
+          })}
         </nav>
       </div>
     </header>

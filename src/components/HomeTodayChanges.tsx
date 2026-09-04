@@ -1,6 +1,30 @@
 import { STORY, TODAY_CARDS, type ChangeTone } from "../data/midterms2026";
+import { formatMargin, type HomePollSnapshot } from "../lib/polls/summarize";
 
-export function HomeTodayChanges() {
+type HomeTodayChangesProps = {
+  polls: HomePollSnapshot;
+};
+
+export function HomeTodayChanges({ polls }: HomeTodayChangesProps) {
+  const ballot = polls.genericBallot;
+  const cards = TODAY_CARDS.map((card) => {
+    if (card.id !== "polls") return card;
+    return {
+      ...card,
+      text: ballot
+        ? `Generic ballot simple average ${formatMargin(ballot.margin)} (Dem ${ballot.dem.toFixed(1)} / GOP ${ballot.gop.toFixed(1)}) from the last ${ballot.pollCount} VoteHub polls.`
+        : "VoteHub polling has not been loaded onto this page yet.",
+    };
+  });
+
+  const storyBody = ballot
+    ? [
+        `The latest simple generic-ballot average from VoteHub is ${formatMargin(ballot.margin)} — Democrats ${ballot.dem.toFixed(1)}, Republicans ${ballot.gop.toFixed(1)} — across the last ${ballot.pollCount} national polls.`,
+        STORY.body[1],
+        STORY.body[2],
+      ]
+    : STORY.body;
+
   return (
     <section className="panel today-changes" id="today">
       <header>
@@ -8,7 +32,7 @@ export function HomeTodayChanges() {
         <h2>What changed today?</h2>
       </header>
       <div className="today-changes__grid">
-        {TODAY_CARDS.map((card) => (
+        {cards.map((card) => (
           <article className="today-card" key={card.id}>
             <ToneIcon tone={card.tone} />
             <span>{card.label}</span>
@@ -19,7 +43,7 @@ export function HomeTodayChanges() {
       <article className="today-story">
         <p className="eyebrow">{STORY.kicker}</p>
         <h3>{STORY.title}</h3>
-        {STORY.body.map((paragraph) => (
+        {storyBody.map((paragraph) => (
           <p key={paragraph}>{paragraph}</p>
         ))}
       </article>
