@@ -93,6 +93,11 @@ function CountdownUnit({ label, value }: { label: string; value: string }) {
   );
 }
 
+const DONKEY_PATH =
+  "M6 42 C 0 36 1 26 11 28 C 12 18 24 20 30 30 L 26 6 C 28 0 36 2 36 16 L 42 4 C 46 -2 54 2 50 18 C 68 16 88 26 90 40 C 92 46 86 52 76 50 C 68 48 60 44 54 42 C 56 56 60 78 56 84 H 46 L 44 58 L 38 84 H 28 L 30 58 L 20 84 H 10 L 14 56 C 6 52 4 46 6 42 Z";
+const ELEPHANT_PATH =
+  "M22 38 C 6 36 -2 50 4 64 C 8 72 20 70 20 62 C 16 54 20 48 28 46 C 26 58 24 78 30 84 H 42 L 44 60 L 54 84 H 68 L 66 60 L 78 84 H 92 L 90 58 L 100 84 H 112 L 106 52 C 116 48 118 38 110 32 C 116 24 106 18 96 22 C 88 8 64 4 52 14 C 48 4 28 6 32 20 C 22 8 8 16 14 30 C 8 32 10 38 22 38 Z";
+
 function TugOfWarArt() {
   return (
     <svg className="tug-art" viewBox="0 0 720 280" role="presentation">
@@ -117,16 +122,22 @@ function TugOfWarArt() {
         <circle cx="42" cy="38" fill="#f4f7ff" r="16" />
         <path d="M42 26 l4 12 h12 l-10 7 4 12-10-7-10 7 4-12-10-7h12z" fill="#c9a27a" />
       </g>
-      <g fill="#3d78ff">
-        <DonkeySilhouette x={78} y={108} scale={1.08} />
-        <DonkeySilhouette x={128} y={98} scale={0.96} />
-        <DonkeySilhouette x={172} y={112} scale={0.84} />
-      </g>
-      <g fill="#e23b3b">
-        <ElephantSilhouette x={528} y={96} scale={1.08} />
-        <ElephantSilhouette x={478} y={86} scale={0.96} />
-        <ElephantSilhouette x={434} y={104} scale={0.84} />
-      </g>
+      <FlagMascot
+        clipId="tug-donkey-clip"
+        path={DONKEY_PATH}
+        scale={1.55}
+        starXs={[24, 36, 48, 60]}
+        x={102}
+        y={80}
+      />
+      <FlagMascot
+        clipId="tug-elephant-clip"
+        path={ELEPHANT_PATH}
+        scale={1.48}
+        starXs={[42, 58, 74]}
+        x={470}
+        y={78}
+      />
       <text fill="#9eb6e0" fontSize="13" fontWeight="700" textAnchor="middle" x="168" y="228">
         Democrats
       </text>
@@ -137,36 +148,38 @@ function TugOfWarArt() {
   );
 }
 
-function DonkeySilhouette({ x, y, scale }: { x: number; y: number; scale: number }) {
+function FlagMascot({
+  clipId,
+  path,
+  scale,
+  starXs,
+  x,
+  y,
+}: {
+  clipId: string;
+  path: string;
+  scale: number;
+  starXs: number[];
+  x: number;
+  y: number;
+}) {
   return (
     <g transform={`translate(${x} ${y}) scale(${scale})`}>
-      <path d="M10 40 Q2 28 8 20 Q14 30 16 38 Z" />
-      <ellipse cx="34" cy="46" rx="22" ry="15" />
-      <ellipse cx="52" cy="34" rx="11" ry="13" />
-      <ellipse cx="66" cy="34" rx="13" ry="9" />
-      <ellipse cx="76" cy="36" rx="8" ry="6" />
-      <path d="M46 24 L40 2 Q50 8 52 24 Z" />
-      <path d="M54 22 L60 0 Q68 8 64 24 Z" />
-      <rect height="22" rx="4" width="8" x="18" y="54" />
-      <rect height="20" rx="4" width="8" x="28" y="56" />
-      <rect height="22" rx="4" width="8" x="40" y="54" />
-      <rect height="20" rx="4" width="8" x="50" y="56" />
-    </g>
-  );
-}
-
-function ElephantSilhouette({ x, y, scale }: { x: number; y: number; scale: number }) {
-  return (
-    <g transform={`translate(${x} ${y}) scale(${scale})`}>
-      <path d="M86 40 Q100 32 96 50 Q90 42 84 44 Z" />
-      <ellipse cx="60" cy="44" rx="30" ry="20" />
-      <ellipse cx="56" cy="28" rx="18" ry="16" />
-      <ellipse cx="32" cy="38" rx="16" ry="14" />
-      <path d="M20 42 C 6 46 0 60 8 70 C 12 74 20 70 18 64 C 14 54 18 48 28 46 Z" />
-      <rect height="24" rx="5" width="11" x="34" y="54" />
-      <rect height="22" rx="5" width="11" x="48" y="56" />
-      <rect height="24" rx="5" width="11" x="64" y="54" />
-      <rect height="22" rx="5" width="11" x="78" y="56" />
+      <clipPath id={clipId}>
+        <path d={path} />
+      </clipPath>
+      <g clipPath={`url(#${clipId})`}>
+        <rect fill="#1d4ebd" height="50" width="130" x="-6" y="-8" />
+        <rect fill="#d3202b" height="52" width="130" x="-6" y="42" />
+        {starXs.map((starX) => (
+          <path
+            d="M0-6.2 1.8-1.8h4.8L2.6 1 4.2 5.8 0 3.2-4.2 5.8-2.6 1-6.6-1.8h4.8Z"
+            fill="#ffffff"
+            key={starX}
+            transform={`translate(${starX} 36)`}
+          />
+        ))}
+      </g>
     </g>
   );
 }
