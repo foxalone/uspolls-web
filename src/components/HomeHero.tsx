@@ -118,20 +118,14 @@ function TugOfWarArt() {
         <path d="M42 26 l4 12 h12 l-10 7 4 12-10-7-10 7 4-12-10-7h12z" fill="#c9a27a" />
       </g>
       <g fill="#3d78ff">
-        <circle cx="118" cy="132" r="22" />
-        <circle cx="168" cy="124" r="20" />
-        <circle cx="214" cy="136" r="18" />
-        <rect height="46" rx="14" width="36" x="100" y="150" />
-        <rect height="46" rx="14" width="34" x="151" y="142" />
-        <rect height="46" rx="14" width="32" x="198" y="152" />
+        <DonkeySilhouette x={78} y={108} scale={1.08} />
+        <DonkeySilhouette x={128} y={98} scale={0.96} />
+        <DonkeySilhouette x={172} y={112} scale={0.84} />
       </g>
       <g fill="#e23b3b">
-        <circle cx="602" cy="132" r="22" />
-        <circle cx="552" cy="124" r="20" />
-        <circle cx="506" cy="136" r="18" />
-        <rect height="46" rx="14" width="36" x="584" y="150" />
-        <rect height="46" rx="14" width="34" x="535" y="142" />
-        <rect height="46" rx="14" width="32" x="490" y="152" />
+        <ElephantSilhouette x={528} y={96} scale={1.08} />
+        <ElephantSilhouette x={478} y={86} scale={0.96} />
+        <ElephantSilhouette x={434} y={104} scale={0.84} />
       </g>
       <text fill="#9eb6e0" fontSize="13" fontWeight="700" textAnchor="middle" x="168" y="228">
         Democrats
@@ -140,5 +134,39 @@ function TugOfWarArt() {
         Republicans
       </text>
     </svg>
+  );
+}
+
+function DonkeySilhouette({ x, y, scale }: { x: number; y: number; scale: number }) {
+  return (
+    <g transform={`translate(${x} ${y}) scale(${scale})`}>
+      <path d="M10 40 Q2 28 8 20 Q14 30 16 38 Z" />
+      <ellipse cx="34" cy="46" rx="22" ry="15" />
+      <ellipse cx="52" cy="34" rx="11" ry="13" />
+      <ellipse cx="66" cy="34" rx="13" ry="9" />
+      <ellipse cx="76" cy="36" rx="8" ry="6" />
+      <path d="M46 24 L40 2 Q50 8 52 24 Z" />
+      <path d="M54 22 L60 0 Q68 8 64 24 Z" />
+      <rect height="22" rx="4" width="8" x="18" y="54" />
+      <rect height="20" rx="4" width="8" x="28" y="56" />
+      <rect height="22" rx="4" width="8" x="40" y="54" />
+      <rect height="20" rx="4" width="8" x="50" y="56" />
+    </g>
+  );
+}
+
+function ElephantSilhouette({ x, y, scale }: { x: number; y: number; scale: number }) {
+  return (
+    <g transform={`translate(${x} ${y}) scale(${scale})`}>
+      <path d="M86 40 Q100 32 96 50 Q90 42 84 44 Z" />
+      <ellipse cx="60" cy="44" rx="30" ry="20" />
+      <ellipse cx="56" cy="28" rx="18" ry="16" />
+      <ellipse cx="32" cy="38" rx="16" ry="14" />
+      <path d="M20 42 C 6 46 0 60 8 70 C 12 74 20 70 18 64 C 14 54 18 48 28 46 Z" />
+      <rect height="24" rx="5" width="11" x="34" y="54" />
+      <rect height="22" rx="5" width="11" x="48" y="56" />
+      <rect height="24" rx="5" width="11" x="64" y="54" />
+      <rect height="22" rx="5" width="11" x="78" y="56" />
+    </g>
   );
 }
