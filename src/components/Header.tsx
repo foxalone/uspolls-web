@@ -1,16 +1,8 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { formatUsLongDate } from "../lib/electionCalendar";
+import { NAV } from "../lib/nav";
 import { ThemeSwitcher } from "./ThemeSwitcher";
-
-const NAV = [
-  { href: "/", label: "Monitor", icon: "home" },
-  { href: "/#polls", label: "Polls", icon: "ballot" },
-  { href: "/#chambers", label: "Chambers", icon: "seats" },
-  { href: "/#odds", label: "Odds", icon: "odds" },
-  { href: "/#headlines", label: "News", icon: "news" },
-  { href: "/admin", label: "Admin", icon: "admin", accent: true },
-];
 
 function NavIcon({ name }: { name: string }) {
   if (name === "ballot") {
@@ -70,7 +62,6 @@ function NavIcon({ name }: { name: string }) {
 export function Header() {
   const today = formatUsLongDate(new Date());
   const router = useRouter();
-  const onAdmin = router.pathname === "/admin";
 
   return (
     <header className="site-header">
@@ -93,7 +84,7 @@ export function Header() {
         </Link>
         <nav aria-label="Primary" className="site-nav">
           {NAV.map((item) => {
-            const active = item.href === "/admin" ? onAdmin : !onAdmin && item.href === "/";
+            const active = router.pathname === item.href;
             return (
               <Link
                 className={`site-nav-link${item.accent ? " is-accent" : ""}${active ? " is-active" : ""}`}

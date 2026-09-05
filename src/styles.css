@@ -340,16 +340,6 @@ p {
   padding: 1.4rem 1.3rem 1.5rem;
 }
 
-.home-hero__art {
-  margin-bottom: 1rem;
-}
-
-.tug-art {
-  display: block;
-  width: 100%;
-  height: auto;
-}
-
 .home-hero__copy {
   display: grid;
   gap: 0.45rem;

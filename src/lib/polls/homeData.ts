@@ -20,6 +20,21 @@ import {
 export { POLLS_ISR_REVALIDATE_SECONDS, emptyHomePollSnapshot };
 export type { HomePollSnapshot };
 
+export async function getHomePollsStaticProps() {
+  try {
+    const polls = await getHomePollSnapshot();
+    return {
+      props: { polls },
+      revalidate: POLLS_ISR_REVALIDATE_SECONDS,
+    };
+  } catch {
+    return {
+      props: { polls: emptyHomePollSnapshot() },
+      revalidate: 60,
+    };
+  }
+}
+
 function mergeLatest(groups: StoredPoll[][], limit: number) {
   const byId = new Map<string, StoredPoll>();
   for (const group of groups) {

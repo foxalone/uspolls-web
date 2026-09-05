@@ -7,12 +7,14 @@ import {
   type LeadingBet,
   type MarketRow,
 } from "../data/midterms2026";
+import { ChamberToggle } from "./ChamberToggle";
 
 type HomeMarketsProps = {
   chamber: ChamberId;
+  onChamberChange: (value: ChamberId) => void;
 };
 
-export function HomeMarkets({ chamber }: HomeMarketsProps) {
+export function HomeMarkets({ chamber, onChamberChange }: HomeMarketsProps) {
   const rows = chamber === "house" ? HOUSE_CONTROL_MARKET : SENATE_CONTROL_MARKET;
   const title = chamber === "house" ? "Who controls the House?" : "Who controls the Senate?";
 
@@ -26,9 +28,7 @@ export function HomeMarkets({ chamber }: HomeMarketsProps) {
             outcomes. These are market probabilities, not polls.
           </p>
         </div>
-        <p className="home-markets__brand" aria-hidden="true">
-          polymarket ~
-        </p>
+        <ChamberToggle onChange={onChamberChange} value={chamber} />
       </header>
 
       <div className="home-markets__chart">

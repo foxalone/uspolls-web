@@ -1,7 +1,7 @@
 import Head from "next/head";
 import { HomePage } from "../src/components/HomePage";
 import { SITE } from "../src/data/midterms2026";
-import { emptyHomePollSnapshot, type HomePollSnapshot } from "../src/lib/polls/summarize";
+import type { HomePollSnapshot } from "../src/lib/polls/summarize";
 
 type IndexPageProps = {
   polls: HomePollSnapshot;
@@ -26,17 +26,6 @@ export default function IndexPage({ polls }: IndexPageProps) {
 }
 
 export async function getStaticProps() {
-  const { getHomePollSnapshot, POLLS_ISR_REVALIDATE_SECONDS } = await import("../src/lib/polls/homeData");
-  try {
-    const polls = await getHomePollSnapshot();
-    return {
-      props: { polls },
-      revalidate: POLLS_ISR_REVALIDATE_SECONDS,
-    };
-  } catch {
-    return {
-      props: { polls: emptyHomePollSnapshot() },
-      revalidate: 60,
-    };
-  }
+  const { getHomePollsStaticProps } = await import("../src/lib/polls/homeData");
+  return getHomePollsStaticProps();
 }
