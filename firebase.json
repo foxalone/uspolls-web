@@ -10,10 +10,18 @@
         "supportEmail": "mityabv@gmail.com",
         "authorizedRedirectUris": [
           "https://uspolls-web.firebaseapp.com/__/auth/handler",
+          "https://uspolls-web.vercel.app",
           "http://localhost",
           "http://127.0.0.1"
         ]
       }
-    }
+    },
+    "authorizedDomains": [
+      "localhost",
+      "127.0.0.1",
+      "uspolls-web.firebaseapp.com",
+      "uspolls-web.web.app",
+      "uspolls-web.vercel.app"
+    ]
   }
 }
