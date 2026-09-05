@@ -103,8 +103,8 @@ function TugOfWarArt() {
     <svg className="tug-art" viewBox="0 0 720 280" role="presentation">
       <defs>
         <linearGradient id="tug-sky" x1="0" x2="0" y1="0" y2="1">
-          <stop offset="0%" stopColor="#12356d" />
-          <stop offset="100%" stopColor="#0a2348" />
+          <stop offset="0%" stopColor="var(--hero-art-top)" />
+          <stop offset="100%" stopColor="var(--hero-art-bottom)" />
         </linearGradient>
       </defs>
       <rect fill="url(#tug-sky)" height="280" rx="28" width="720" />
@@ -138,10 +138,10 @@ function TugOfWarArt() {
         x={470}
         y={78}
       />
-      <text fill="#9eb6e0" fontSize="13" fontWeight="700" textAnchor="middle" x="168" y="228">
+      <text fill="var(--hero-art-label)" fontSize="13" fontWeight="700" textAnchor="middle" x="168" y="228">
         Democrats
       </text>
-      <text fill="#9eb6e0" fontSize="13" fontWeight="700" textAnchor="middle" x="552" y="228">
+      <text fill="var(--hero-art-label)" fontSize="13" fontWeight="700" textAnchor="middle" x="552" y="228">
         Republicans
       </text>
     </svg>

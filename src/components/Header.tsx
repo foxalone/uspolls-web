@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { formatUsLongDate } from "../lib/electionCalendar";
+import { ThemeSwitcher } from "./ThemeSwitcher";
 
 const NAV = [
   { href: "/", label: "Monitor", icon: "home" },
@@ -75,7 +76,10 @@ export function Header() {
     <header className="site-header">
       <div className="site-header__bar">
         <p className="site-header__date">{today}</p>
-        <span className="site-header__lang">EN</span>
+        <div className="site-header__tools">
+          <ThemeSwitcher />
+          <span className="site-header__lang">EN</span>
+        </div>
       </div>
       <div className="site-header__main">
         <Link className="brand" href="/">
