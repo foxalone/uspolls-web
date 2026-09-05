@@ -1,5 +1,6 @@
 import { existsSync, readFileSync } from "node:fs";
 import { cert, getApps, initializeApp, type App } from "firebase-admin/app";
+import { getAuth, type Auth } from "firebase-admin/auth";
 import { getFirestore, type Firestore } from "firebase-admin/firestore";
 
 const APP_NAME = "uspolls-server";
@@ -70,4 +71,8 @@ export function getFirebaseAdminApp(): App {
 
 export function getFirestoreDb(): Firestore {
   return getFirestore(getFirebaseAdminApp());
+}
+
+export function getFirebaseAuth(): Auth {
+  return getAuth(getFirebaseAdminApp());
 }

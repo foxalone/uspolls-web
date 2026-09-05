@@ -1215,7 +1215,7 @@ p {
   color: var(--text);
 }
 
-.admin-login__form button,
+.admin-login__google,
 .admin-raw__logout,
 .admin-raw__filters button {
   min-height: 2.3rem;
@@ -1228,8 +1228,16 @@ p {
   font-weight: 800;
 }
 
-.admin-login__error {
+.admin-login__error,
+.admin-raw__who {
   color: #ff8b8b;
+}
+
+.admin-raw__who {
+  margin-top: 0.35rem;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 700;
 }
 
 .admin-raw__filters {

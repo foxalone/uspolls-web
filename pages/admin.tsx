@@ -9,6 +9,7 @@ type AdminPageProps =
   | { authed: false }
   | {
       authed: true;
+      email: string;
       polls: PublicPollRow[];
       raw: Record<string, unknown>[];
       sync: VoteHubSyncDoc | null;
@@ -22,7 +23,7 @@ export default function AdminPage(props: AdminPageProps) {
         <meta name="robots" content="noindex,nofollow" />
       </Head>
       {props.authed ? (
-        <AdminRawPolls polls={props.polls} raw={props.raw} sync={props.sync} />
+        <AdminRawPolls email={props.email} polls={props.polls} raw={props.raw} sync={props.sync} />
       ) : (
         <AdminLogin />
       )}
@@ -31,19 +32,21 @@ export default function AdminPage(props: AdminPageProps) {
 }
 
 export const getServerSideProps: GetServerSideProps<AdminPageProps> = async ({ req }) => {
-  const { isAdminRequest } = await import("../src/lib/admin/session");
-  if (!isAdminRequest(req)) {
+  const { verifyAdminSession } = await import("../src/lib/admin/session");
+  const session = await verifyAdminSession(req);
+  if (!session) {
     return { props: { authed: false } };
   }
 
   try {
     const { getAdminRawSnapshot } = await import("../src/lib/polls/adminData");
     const snapshot = await getAdminRawSnapshot();
-    return { props: { authed: true, ...snapshot } };
+    return { props: { authed: true, email: session.email, ...snapshot } };
   } catch {
     return {
       props: {
         authed: true,
+        email: session.email,
         polls: [],
         raw: [],
         sync: null,

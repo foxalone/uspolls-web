@@ -1,6 +1,8 @@
 import { Fragment, useMemo, useState } from "react";
+import { signOut } from "firebase/auth";
 import { raceTypeLabel, type PublicPollRow } from "../lib/polls/summarize";
 import type { VoteHubSyncDoc } from "../lib/votehub/types";
+import { getFirebaseClientAuth } from "../lib/firebase/client";
 
 const FILTERS = [
   { id: "all", label: "All" },
@@ -15,9 +17,10 @@ type AdminRawPollsProps = {
   polls: PublicPollRow[];
   raw: Record<string, unknown>[];
   sync: VoteHubSyncDoc | null;
+  email: string;
 };
 
-export function AdminRawPolls({ polls, raw, sync }: AdminRawPollsProps) {
+export function AdminRawPolls({ polls, raw, sync, email }: AdminRawPollsProps) {
   const [filter, setFilter] = useState<(typeof FILTERS)[number]["id"]>("all");
   const [openId, setOpenId] = useState<string | null>(null);
   const [query, setQuery] = useState("");
@@ -54,12 +57,23 @@ export function AdminRawPolls({ polls, raw, sync }: AdminRawPollsProps) {
         <div>
           <p className="eyebrow">Admin</p>
           <h2>Raw VoteHub rows</h2>
+          <p className="admin-raw__who">{email}</p>
         </div>
-        <form action="/api/admin/logout" method="post">
-          <button className="admin-raw__logout" type="submit">
-            Log out
-          </button>
-        </form>
+        <button
+          className="admin-raw__logout"
+          onClick={async () => {
+            try {
+              await signOut(getFirebaseClientAuth());
+            } catch {
+              // Cookie clear still logs the server session out.
+            }
+            await fetch("/api/admin/logout", { method: "POST", redirect: "manual" });
+            window.location.assign("/admin");
+          }}
+          type="button"
+        >
+          Log out
+        </button>
       </header>
 
       <div className="admin-raw__status">

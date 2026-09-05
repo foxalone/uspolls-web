@@ -7,5 +7,5 @@ export default function handler(req: NextApiRequest, res: NextApiResponse) {
     return res.status(405).json({ error: "METHOD_NOT_ALLOWED" });
   }
   res.setHeader("Set-Cookie", adminCookieHeader("", true));
-  res.redirect(302, "/admin");
+  return res.status(200).json({ ok: true });
 }

@@ -2,5 +2,18 @@
   "firestore": {
     "rules": "firestore.rules",
     "indexes": "firestore.indexes.json"
+  },
+  "auth": {
+    "providers": {
+      "googleSignIn": {
+        "oAuthBrandDisplayName": "US Polls",
+        "supportEmail": "mityabv@gmail.com",
+        "authorizedRedirectUris": [
+          "https://uspolls-web.firebaseapp.com/__/auth/handler",
+          "http://localhost",
+          "http://127.0.0.1"
+        ]
+      }
+    }
   }
 }
