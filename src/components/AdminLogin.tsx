@@ -59,11 +59,13 @@ async function completeAdminSession(user: User) {
 
   if (!response.ok) {
     await signOut(getFirebaseClientAuth());
+    const payload = await response.json().catch(() => ({} as { error?: string }));
+    const serverError = typeof payload.error === "string" ? payload.error : "";
     throw Object.assign(new Error(
       response.status === 403
         ? `Only ${ADMIN_EMAIL} can open this admin table.`
         : "Google sign-in failed.",
-    ), { code: response.status === 403 ? "admin/forbidden" : "admin/session" });
+    ), { code: response.status === 403 ? "admin/forbidden" : serverError === "UNAUTHORIZED" ? "admin/session" : `admin/${response.status}` });
   }
 
   window.location.assign("/admin");
