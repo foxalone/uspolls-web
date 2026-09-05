@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import { Header } from "./Header";
+import { InstallPrompt } from "./InstallPrompt";
 import { ThemeProvider } from "./ThemeProvider";
 
 type AppShellProps = {
@@ -28,6 +29,7 @@ export function AppShell({ children }: AppShellProps) {
             you should bet on, and not an official election result.
           </p>
         </footer>
+        <InstallPrompt />
       </div>
     </ThemeProvider>
   );

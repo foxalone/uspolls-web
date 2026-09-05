@@ -143,7 +143,6 @@ p {
   background: var(--header);
   color: var(--header-text);
   box-shadow: var(--header-shadow);
-  transform: translateY(0);
   transition: transform 0.28s ease, box-shadow 0.2s ease;
 }
 
@@ -1150,6 +1149,85 @@ p {
   margin-top: 0.35rem;
 }
 
+.pwa-install {
+  position: fixed;
+  right: 0.85rem;
+  bottom: 0.85rem;
+  left: 0.85rem;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  max-width: 28rem;
+  margin: 0 auto;
+  padding: 0.8rem 0.75rem 0.8rem 0.8rem;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--navy-card);
+  box-shadow: var(--shadow);
+  color: var(--text);
+}
+
+.pwa-install__mark {
+  display: grid;
+  place-items: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  flex: 0 0 auto;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #e23b3b, #3d78ff);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.pwa-install__copy {
+  min-width: 0;
+  flex: 1;
+  line-height: 1.25;
+}
+
+.pwa-install__copy strong {
+  display: block;
+  font-size: 0.95rem;
+  font-weight: 800;
+}
+
+.pwa-install__copy p {
+  color: var(--muted);
+  font-size: 0.78rem;
+}
+
+.pwa-install__copy b {
+  color: var(--text);
+}
+
+.pwa-install__action {
+  flex: 0 0 auto;
+  padding: 0.45rem 0.75rem;
+  border: 0;
+  border-radius: 999px;
+  background: var(--toggle-active-bg);
+  color: var(--toggle-active-text);
+  font-size: 0.78rem;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.pwa-install__close {
+  flex: 0 0 auto;
+  width: 1.7rem;
+  height: 1.7rem;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
 @media (max-width: 980px) {
   .chamber-battle__grid,
   .today-changes__grid,
@@ -1180,6 +1258,7 @@ p {
 
 @media (max-width: 720px) {
   .site-header {
+    transform: none;
     transition: top 0.28s ease, box-shadow 0.2s ease;
   }
 
@@ -1234,6 +1313,10 @@ p {
 
   .app-shell {
     padding-bottom: calc(4.4rem + env(safe-area-inset-bottom));
+  }
+
+  .pwa-install {
+    bottom: calc(4.7rem + env(safe-area-inset-bottom));
   }
 
   .theme-switcher__btn {
