@@ -1,5 +1,12 @@
 import { useEffect, useState } from "react";
-import { getRedirectResult, signInWithRedirect, signOut, type User } from "firebase/auth";
+import {
+  browserPopupRedirectResolver,
+  getRedirectResult,
+  signInWithPopup,
+  signInWithRedirect,
+  signOut,
+  type User,
+} from "firebase/auth";
 import { ADMIN_EMAIL } from "../lib/admin/allowlist";
 import { getFirebaseClientAuth, googleAuthProvider } from "../lib/firebase/client";
 
@@ -13,7 +20,7 @@ function authErrorMessage(err: unknown) {
   if (code === "auth/unauthorized-domain") {
     return "This domain is not authorized for Firebase Auth.";
   }
-  if (code === "auth/popup-blocked") return "The Google sign-in window was blocked.";
+  if (code === "auth/popup-blocked") return "The Google sign-in window was blocked. Allow popups and try again.";
   if (code === "auth/popup-closed-by-user" || code === "auth/cancelled-popup-request") {
     return "";
   }
@@ -28,7 +35,7 @@ function consumeRedirectUser() {
     redirectUserPromise = (async () => {
       const auth = getFirebaseClientAuth();
       await auth.authStateReady();
-      const result = await getRedirectResult(auth);
+      const result = await getRedirectResult(auth, browserPopupRedirectResolver);
       return result?.user ?? auth.currentUser;
     })();
   }
@@ -85,10 +92,7 @@ export function AdminLogin() {
       .then(async (user) => {
         if (!user) {
           sessionStorage.removeItem(REDIRECT_FLAG);
-          if (alive && returning) {
-            setError("Google sign-in did not finish. Try again.");
-            setPending(false);
-          }
+          if (alive && returning) setPending(false);
           return;
         }
         if (alive) setPending(true);
@@ -113,14 +117,34 @@ export function AdminLogin() {
   async function signInWithGoogle() {
     setPending(true);
     setError("");
+    const auth = getFirebaseClientAuth();
+    const provider = googleAuthProvider();
     try {
-      sessionStorage.setItem(REDIRECT_FLAG, "1");
-      await signInWithRedirect(getFirebaseClientAuth(), googleAuthProvider());
-    } catch (err) {
-      sessionStorage.removeItem(REDIRECT_FLAG);
-      const message = authErrorMessage(err);
-      if (message) setError(message);
-      setPending(false);
+      const result = await signInWithPopup(auth, provider, browserPopupRedirectResolver);
+      await completeAdminSessionOnce(result.user);
+    } catch (popupErr) {
+      const code = typeof popupErr === "object" && popupErr && "code" in popupErr
+        ? String(popupErr.code)
+        : "";
+      if (code === "auth/popup-closed-by-user" || code === "auth/cancelled-popup-request") {
+        setPending(false);
+        return;
+      }
+      if (code !== "auth/popup-blocked" && code !== "auth/operation-not-supported-in-this-environment") {
+        const message = authErrorMessage(popupErr);
+        if (message) setError(message);
+        setPending(false);
+        return;
+      }
+      try {
+        sessionStorage.setItem(REDIRECT_FLAG, "1");
+        await signInWithRedirect(auth, provider, browserPopupRedirectResolver);
+      } catch (redirectErr) {
+        sessionStorage.removeItem(REDIRECT_FLAG);
+        const message = authErrorMessage(redirectErr);
+        if (message) setError(message);
+        setPending(false);
+      }
     }
   }
 
@@ -134,7 +158,7 @@ export function AdminLogin() {
       </p>
       {error ? <p className="admin-login__error">{error}</p> : null}
       <button className="admin-login__google" disabled={pending} onClick={signInWithGoogle} type="button">
-        {pending ? "Finishing sign-in…" : "Sign in with Google"}
+        {pending ? "Signing in…" : "Sign in with Google"}
       </button>
     </section>
   );

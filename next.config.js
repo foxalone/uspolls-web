@@ -10,6 +10,18 @@ const nextConfig = {
       },
     ];
   },
+  async rewrites() {
+    return [
+      {
+        source: "/__/auth/:path*",
+        destination: "https://uspolls-web.firebaseapp.com/__/auth/:path*",
+      },
+      {
+        source: "/__/firebase/:path*",
+        destination: "https://uspolls-web.firebaseapp.com/__/firebase/:path*",
+      },
+    ];
+  },
 };
 
 export default nextConfig;
