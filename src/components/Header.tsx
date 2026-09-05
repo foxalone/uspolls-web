@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
+import { useEffect, useRef, useState } from "react";
 import { formatUsLongDate } from "../lib/electionCalendar";
 import { NAV } from "../lib/nav";
 import { ThemeSwitcher } from "./ThemeSwitcher";
@@ -59,12 +60,72 @@ function NavIcon({ name }: { name: string }) {
   );
 }
 
+const HIDE_AFTER = 24;
+const DIRECTION_DELTA = 8;
+
 export function Header() {
   const today = formatUsLongDate(new Date());
   const router = useRouter();
+  const headerRef = useRef<HTMLElement>(null);
+  const [hidden, setHidden] = useState(false);
+
+  useEffect(() => {
+    const header = headerRef.current;
+    if (!header) {
+      return;
+    }
+
+    const syncHeight = () => {
+      header.style.setProperty("--site-header-h", `${header.offsetHeight}px`);
+    };
+
+    syncHeight();
+    window.addEventListener("resize", syncHeight);
+    return () => window.removeEventListener("resize", syncHeight);
+  }, []);
+
+  useEffect(() => {
+    setHidden(false);
+  }, [router.pathname]);
+
+  useEffect(() => {
+    let lastY = window.scrollY;
+    let frame = 0;
+
+    const update = () => {
+      const y = Math.max(0, window.scrollY);
+      const delta = y - lastY;
+
+      if (y <= HIDE_AFTER) {
+        setHidden(false);
+      } else if (delta > DIRECTION_DELTA) {
+        setHidden(true);
+      } else if (delta < -DIRECTION_DELTA) {
+        setHidden(false);
+      }
+
+      lastY = y;
+      frame = 0;
+    };
+
+    const onScroll = () => {
+      if (frame) {
+        return;
+      }
+      frame = window.requestAnimationFrame(update);
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      if (frame) {
+        window.cancelAnimationFrame(frame);
+      }
+    };
+  }, []);
 
   return (
-    <header className="site-header">
+    <header className={`site-header${hidden ? " is-hidden" : ""}`} ref={headerRef}>
       <div className="site-header__bar">
         <p className="site-header__date">{today}</p>
         <div className="site-header__tools">
