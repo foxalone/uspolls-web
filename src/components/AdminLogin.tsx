@@ -3,6 +3,11 @@ import { getRedirectResult, signInWithRedirect, signOut, type User } from "fireb
 import { ADMIN_EMAIL } from "../lib/admin/allowlist";
 import { getFirebaseClientAuth, googleAuthProvider } from "../lib/firebase/client";
 
+const REDIRECT_FLAG = "uspolls-admin-redirect";
+
+let redirectUserPromise: Promise<User | null> | null = null;
+let sessionPromise: Promise<void> | null = null;
+
 function authErrorMessage(err: unknown) {
   const code = typeof err === "object" && err && "code" in err ? String(err.code) : "";
   if (code === "auth/unauthorized-domain") {
@@ -18,72 +23,90 @@ function authErrorMessage(err: unknown) {
   return code ? `Google sign-in failed (${code}).` : "Google sign-in failed.";
 }
 
+function consumeRedirectUser() {
+  if (!redirectUserPromise) {
+    redirectUserPromise = (async () => {
+      const auth = getFirebaseClientAuth();
+      await auth.authStateReady();
+      const result = await getRedirectResult(auth);
+      return result?.user ?? auth.currentUser;
+    })();
+  }
+  return redirectUserPromise;
+}
+
+async function completeAdminSession(user: User) {
+  const email = user.email?.toLowerCase() || "";
+  if (!user.emailVerified || email !== ADMIN_EMAIL) {
+    await signOut(getFirebaseClientAuth());
+    throw Object.assign(new Error(`Only ${ADMIN_EMAIL} can open this admin table.`), { code: "admin/forbidden" });
+  }
+
+  const idToken = await user.getIdToken();
+  const response = await fetch("/api/admin/login", {
+    method: "POST",
+    credentials: "same-origin",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify({ idToken }),
+  });
+
+  if (!response.ok) {
+    await signOut(getFirebaseClientAuth());
+    throw Object.assign(new Error(
+      response.status === 403
+        ? `Only ${ADMIN_EMAIL} can open this admin table.`
+        : "Google sign-in failed.",
+    ), { code: response.status === 403 ? "admin/forbidden" : "admin/session" });
+  }
+
+  window.location.assign("/admin");
+}
+
+function completeAdminSessionOnce(user: User) {
+  if (!sessionPromise) {
+    sessionPromise = completeAdminSession(user).catch((err) => {
+      sessionPromise = null;
+      throw err;
+    });
+  }
+  return sessionPromise;
+}
+
 export function AdminLogin() {
   const [error, setError] = useState("");
   const [pending, setPending] = useState(false);
 
-  async function completeAdminSession(user: User) {
-    const email = user.email?.toLowerCase() || "";
-    if (!user.emailVerified || email !== ADMIN_EMAIL) {
-      await signOut(getFirebaseClientAuth());
-      throw Object.assign(new Error(`Only ${ADMIN_EMAIL} can open this admin table.`), { code: "admin/forbidden" });
-    }
-
-    const idToken = await user.getIdToken();
-    const response = await fetch("/api/admin/login", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ idToken }),
-    });
-
-    if (!response.ok) {
-      await signOut(getFirebaseClientAuth());
-      throw Object.assign(new Error(
-        response.status === 403
-          ? `Only ${ADMIN_EMAIL} can open this admin table.`
-          : "Google sign-in failed.",
-      ), { code: response.status === 403 ? "admin/forbidden" : "admin/session" });
-    }
-
-    window.location.assign("/admin");
-  }
-
   useEffect(() => {
-    let cancelled = false;
-    const returning = sessionStorage.getItem("uspolls-admin-redirect") === "1";
-    if (returning) {
-      setPending(true);
-      sessionStorage.removeItem("uspolls-admin-redirect");
-    }
+    let alive = true;
+    const returning = sessionStorage.getItem(REDIRECT_FLAG) === "1";
+    if (returning) setPending(true);
 
-    try {
-      const auth = getFirebaseClientAuth();
-      getRedirectResult(auth)
-        .then(async (result) => {
-          if (cancelled) return;
-          if (!result) {
-            if (returning) setPending(false);
-            return;
+    consumeRedirectUser()
+      .then(async (user) => {
+        if (!user) {
+          sessionStorage.removeItem(REDIRECT_FLAG);
+          if (alive && returning) {
+            setError("Google sign-in did not finish. Try again.");
+            setPending(false);
           }
-          setPending(true);
-          await completeAdminSession(result.user);
-        })
-        .catch((err) => {
-          if (cancelled) return;
-          const message = err instanceof Error && err.message.startsWith("Only ")
-            ? err.message
-            : authErrorMessage(err);
-          if (message) setError(message);
-          setPending(false);
-        });
-    } catch (err) {
-      const message = authErrorMessage(err);
-      if (message) setError(message);
-      setPending(false);
-    }
+          return;
+        }
+        if (alive) setPending(true);
+        await completeAdminSessionOnce(user);
+        sessionStorage.removeItem(REDIRECT_FLAG);
+      })
+      .catch((err) => {
+        sessionStorage.removeItem(REDIRECT_FLAG);
+        if (!alive) return;
+        const message = err instanceof Error && err.message.startsWith("Only ")
+          ? err.message
+          : authErrorMessage(err);
+        if (message) setError(message);
+        setPending(false);
+      });
 
     return () => {
-      cancelled = true;
+      alive = false;
     };
   }, []);
 
@@ -91,11 +114,10 @@ export function AdminLogin() {
     setPending(true);
     setError("");
     try {
-      const auth = getFirebaseClientAuth();
-      sessionStorage.setItem("uspolls-admin-redirect", "1");
-      await signInWithRedirect(auth, googleAuthProvider());
+      sessionStorage.setItem(REDIRECT_FLAG, "1");
+      await signInWithRedirect(getFirebaseClientAuth(), googleAuthProvider());
     } catch (err) {
-      sessionStorage.removeItem("uspolls-admin-redirect");
+      sessionStorage.removeItem(REDIRECT_FLAG);
       const message = authErrorMessage(err);
       if (message) setError(message);
       setPending(false);
@@ -112,7 +134,7 @@ export function AdminLogin() {
       </p>
       {error ? <p className="admin-login__error">{error}</p> : null}
       <button className="admin-login__google" disabled={pending} onClick={signInWithGoogle} type="button">
-        {pending ? "Redirecting to Google…" : "Sign in with Google"}
+        {pending ? "Finishing sign-in…" : "Sign in with Google"}
       </button>
     </section>
   );

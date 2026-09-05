@@ -1,5 +1,12 @@
 import { getApp, getApps, initializeApp, type FirebaseApp } from "firebase/app";
-import { GoogleAuthProvider, getAuth, type Auth } from "firebase/auth";
+import {
+  GoogleAuthProvider,
+  browserLocalPersistence,
+  browserPopupRedirectResolver,
+  getAuth,
+  initializeAuth,
+  type Auth,
+} from "firebase/auth";
 
 function clientConfig() {
   const apiKey = process.env.NEXT_PUBLIC_FIREBASE_API_KEY?.trim() || "";
@@ -18,7 +25,15 @@ export function getFirebaseClientApp(): FirebaseApp {
 }
 
 export function getFirebaseClientAuth(): Auth {
-  return getAuth(getFirebaseClientApp());
+  const app = getFirebaseClientApp();
+  try {
+    return initializeAuth(app, {
+      persistence: browserLocalPersistence,
+      popupRedirectResolver: browserPopupRedirectResolver,
+    });
+  } catch {
+    return getAuth(app);
+  }
 }
 
 export function googleAuthProvider() {

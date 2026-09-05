@@ -7,7 +7,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(405).json({ error: "METHOD_NOT_ALLOWED" });
   }
 
-  const idToken = typeof req.body?.idToken === "string" ? req.body.idToken.trim() : "";
+  const rawBody = req.body;
+  let parsed: { idToken?: unknown } = rawBody;
+  if (typeof rawBody === "string") {
+    try {
+      parsed = JSON.parse(rawBody) as { idToken?: unknown };
+    } catch {
+      return res.status(400).json({ error: "MISSING_ID_TOKEN" });
+    }
+  }
+  const idToken = typeof parsed?.idToken === "string" ? parsed.idToken.trim() : "";
   if (!idToken) return res.status(400).json({ error: "MISSING_ID_TOKEN" });
 
   try {
@@ -16,6 +25,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(200).json({ ok: true, email: session.email });
   } catch (error) {
     const status = (error as { status?: number }).status === 403 ? 403 : 401;
+    console.error("admin login failed", status, error instanceof Error ? error.message : "unknown");
     return res.status(status).json({
       error: status === 403 ? "FORBIDDEN" : "UNAUTHORIZED",
     });
