@@ -4,6 +4,7 @@ export default function Document() {
   return (
     <Html dir="ltr" lang="en">
       <Head>
+        <meta name="msvalidate.01" content="6C4039ADE8CC2BF28AD52F475540E351" />
         <meta name="theme-color" content="#041024" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
