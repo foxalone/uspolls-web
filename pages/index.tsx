@@ -1,6 +1,7 @@
 import Head from "next/head";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { Us2024ResultsSection } from "../src/components/Us2024Map";
 import { PRESIDENTIAL_ELECTION_DATE } from "../src/data/presidential2028";
 import { languageLocale, useLanguage, type Language } from "../src/lib/language";
 
@@ -31,6 +32,10 @@ const copy = {
     card2Text: "Primaries, conventions and debates as schedules are confirmed by states and parties.",
     card3: "The path to 270",
     card3Text: "An Electoral College view once comparable state polling is available. No early map built on guesses.",
+    mapTitle: "2024 results",
+    mapText: "Each state is colored by who won it in 2024. Red is Trump, blue is Harris. The number is that state's electoral votes. Maine and Nebraska also split one vote by district.",
+    trump: "Trump",
+    harris: "Harris",
     sourceNote: "Official election date and process: USA.gov. Poll figures will not appear until their sources are verified.",
   },
   es: {
@@ -59,6 +64,10 @@ const copy = {
     card2Text: "Primarias, convenciones y debates cuando los estados y partidos confirmen sus fechas.",
     card3: "El camino a 270",
     card3Text: "Una vista del Colegio Electoral cuando haya encuestas estatales comparables. Sin mapas prematuros basados en conjeturas.",
+    mapTitle: "Resultados de 2024",
+    mapText: "Cada estado tiene el color de quien lo ganó en 2024. Rojo es Trump, azul es Harris. El número son sus votos electorales. Maine y Nebraska además repartieron un voto por distrito.",
+    trump: "Trump",
+    harris: "Harris",
     sourceNote: "Fecha y proceso oficiales: USA.gov. No se mostrarán cifras de encuestas hasta verificar sus fuentes.",
   },
   ru: {
@@ -87,6 +96,10 @@ const copy = {
     card2Text: "Праймериз, съезды и дебаты — по мере того, как штаты и партии подтверждают даты.",
     card3: "Путь к 270",
     card3Text: "Карта коллегии выборщиков появится, когда будут сопоставимые опросы по штатам. Без ранней карты на догадках.",
+    mapTitle: "Итоги 2024",
+    mapText: "Штат окрашен по тому, кто победил в нём в 2024 году. Красный — Трамп, синий — Харрис. Число — голоса выборщиков этого штата. Мэн и Небраска ещё отдали по одному голосу по округу.",
+    trump: "Трамп",
+    harris: "Харрис",
     sourceNote: "Официальная дата и порядок выборов: USA.gov. Цифры опросов не появятся, пока источники не проверены.",
   },
 } as const;
@@ -163,6 +176,7 @@ export default function IndexPage() {
             </ul>
           </section>
         </div>
+        <Us2024ResultsSection kicker={`03 / ${t.mapTitle}`} title={t.mapTitle} text={t.mapText} trump={t.trump} harris={t.harris} />
         <p className="campaign-source-note">{t.sourceNote} <a href="https://www.usa.gov/presidential-election-process" rel="noreferrer" target="_blank">USA.gov ↗</a></p>
       </div>
     </>

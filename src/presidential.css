@@ -7,6 +7,8 @@
   --campaign-accent: #f6be73;
   --campaign-accent-ink: #1b2636;
   --campaign-hero: radial-gradient(circle at 82% 12%, rgba(91, 131, 185, 0.24), transparent 34%), linear-gradient(120deg, #142e4d 0%, #0b1d35 55%, #122b48 100%);
+  --map-open: #2a4060;
+  --map-open-ink: #d7deea;
 }
 
 [data-theme="light"] {
@@ -18,6 +20,8 @@
   --campaign-accent: #a65b25;
   --campaign-accent-ink: #ffffff;
   --campaign-hero: radial-gradient(circle at 82% 12%, rgba(111, 153, 206, 0.19), transparent 34%), linear-gradient(120deg, #faf6ed 0%, #f4f6f7 58%, #e8eff7 100%);
+  --map-open: #d5dbe3;
+  --map-open-ink: #172941;
 }
 
 .campaign-header {
@@ -107,6 +111,7 @@
 .campaign-stack {
   display: grid;
   gap: 1.15rem;
+  min-width: 0;
   color: var(--campaign-ink);
 }
 
@@ -115,6 +120,7 @@
 .campaign-panel,
 .campaign-facts,
 .timeline-list {
+  min-width: 0;
   border: 1px solid var(--campaign-stroke);
   border-radius: 1.5rem;
 }
@@ -368,6 +374,106 @@
   font-size: clamp(2.7rem, 5.5vw, 4.9rem);
 }
 
+.timeline-intro {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(16rem, 0.82fr);
+  align-items: stretch;
+  gap: clamp(1.2rem, 3vw, 2.6rem);
+  padding-right: clamp(1rem, 2vw, 1.35rem);
+}
+
+.timeline-intro__copy {
+  min-width: 0;
+  align-self: center;
+}
+
+.candidate-pair {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  margin: 0;
+  min-height: 15.5rem;
+  overflow: hidden;
+  border-radius: 1.15rem;
+  background:
+    radial-gradient(circle at 22% 18%, rgba(255, 255, 255, 0.55) 0 1px, transparent 2px),
+    radial-gradient(circle at 78% 28%, rgba(255, 255, 255, 0.4) 0 1px, transparent 2px),
+    linear-gradient(105deg, #1d4f9c 0%, #6f97d6 42%, #f7f4ef 50%, #ef8b84 58%, #c43232 100%);
+  box-shadow: 0 18px 36px rgba(4, 12, 25, 0.22);
+}
+
+.candidate-pair img {
+  width: 100%;
+  height: 100%;
+  min-height: 15.5rem;
+  object-fit: cover;
+  object-position: center 16%;
+  filter: grayscale(1) contrast(1.08);
+}
+
+.candidate-pair img.is-obama {
+  object-position: center 8%;
+}
+
+.candidate-pair::before,
+.candidate-pair::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.candidate-pair::before {
+  z-index: 1;
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.9) 0 1.1px, transparent 1.5px);
+  background-size: 42px 36px;
+  background-position: 6px 8px;
+  mix-blend-mode: screen;
+  opacity: 0.45;
+}
+
+.candidate-pair::after {
+  z-index: 1;
+  background: linear-gradient(100deg, rgba(29, 79, 156, 0.9) 0%, rgba(70, 130, 210, 0.55) 34%, rgba(244, 214, 228, 0.28) 50%, rgba(220, 80, 80, 0.55) 66%, rgba(176, 32, 40, 0.9) 100%);
+  mix-blend-mode: color;
+}
+
+.candidate-pair.is-open {
+  grid-template-columns: 1fr;
+  place-items: center;
+  align-content: center;
+  gap: 0.85rem;
+  padding: 1.2rem;
+  text-align: center;
+}
+
+.candidate-pair__ghost {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.8rem;
+  width: min(100%, 16rem);
+}
+
+.candidate-pair__ghost i {
+  display: block;
+  height: 8.5rem;
+  border-radius: 4.2rem 4.2rem 1rem 1rem;
+  background:
+    radial-gradient(circle at 50% 28%, rgba(255, 255, 255, 0.72) 0 1.15rem, transparent 1.2rem),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0.08));
+}
+
+.candidate-pair figcaption {
+  position: relative;
+  z-index: 1;
+  margin: 0;
+  color: white;
+  font-size: 0.92rem;
+  font-weight: 800;
+  text-shadow: 0 1px 8px rgba(8, 18, 40, 0.45);
+}
+
 .poll-count {
   display: inline-flex;
   align-items: center;
@@ -475,6 +581,433 @@
   color: var(--campaign-accent);
 }
 
+.poll-tabs {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0.3rem;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  margin-top: 1.35rem;
+  padding: 0.28rem;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: none;
+  border: 1px solid var(--campaign-stroke);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--campaign-panel) 72%, transparent);
+}
+
+.poll-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.poll-tabs button {
+  flex: 0 0 auto;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--campaign-subtle);
+  padding: 0.55rem 0.95rem;
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 800;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.poll-tabs button.is-active {
+  background: var(--campaign-accent);
+  color: var(--campaign-accent-ink);
+}
+
+.poll-archive {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.poll-chips {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 0.4rem;
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  padding-bottom: 0.35rem;
+  scrollbar-width: thin;
+}
+
+.poll-chips button {
+  flex: 0 0 auto;
+  border: 1px solid var(--campaign-stroke);
+  border-radius: 999px;
+  background: var(--campaign-panel-2);
+  color: var(--campaign-ink);
+  padding: 0.38rem 0.72rem;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 700;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.poll-chips button.is-active {
+  border-color: transparent;
+  background: var(--campaign-accent);
+  color: var(--campaign-accent-ink);
+}
+
+.poll-chips button.is-result {
+  border-color: #3da35d;
+  background: #e7f8ec;
+  color: #145c32;
+}
+
+.poll-chips button.is-result.is-active {
+  border-color: transparent;
+  background: #1f8a4c;
+  color: white;
+}
+
+.poll-bar-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0.85rem 0 0.35rem;
+}
+
+.poll-bar-legend button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  border: 1px solid var(--campaign-stroke);
+  border-radius: 999px;
+  background: var(--campaign-panel-2);
+  color: var(--campaign-subtle);
+  padding: 0.38rem 0.72rem;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.poll-bar-legend button.is-trump {
+  border-color: transparent;
+  background: #e23b32;
+  color: white;
+}
+
+.poll-bar-legend button.is-biden {
+  border-color: transparent;
+  background: #3d7adf;
+  color: white;
+}
+
+.poll-bar-legend button.is-harris {
+  border-color: transparent;
+  background: #1d4f9c;
+  color: white;
+}
+
+.poll-bar-legend button.is-result {
+  border-color: transparent;
+  background: #1f8a4c;
+  color: white;
+}
+
+.poll-bar__swatch--result {
+  background: #1f8a4c;
+}
+
+.poll-bar-legend button.is-active .poll-bar__swatch {
+  background: white;
+}
+
+.poll-bars {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: stretch;
+  gap: 0.75rem;
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  padding: 0.85rem 0.15rem 0.55rem;
+  scrollbar-width: thin;
+}
+
+.poll-bar {
+  position: relative;
+  flex: 0 0 auto;
+  width: 8.6rem;
+  display: grid;
+  justify-items: center;
+  align-content: stretch;
+  grid-template-rows: minmax(8.8rem, 1fr) auto auto auto;
+  gap: 0.42rem;
+  padding: 0.85rem 0.55rem 0.7rem;
+  border: 1px solid var(--campaign-stroke);
+  border-radius: 1.15rem;
+  background: color-mix(in srgb, var(--campaign-panel) 88%, white);
+  box-shadow: 0 14px 28px rgba(23, 41, 65, 0.08);
+}
+
+.poll-bar--lead-trump {
+  background: color-mix(in srgb, #e23b32 20%, var(--campaign-panel));
+  border-color: color-mix(in srgb, #e23b32 42%, var(--campaign-stroke));
+}
+
+.poll-bar--lead-democrat {
+  background: color-mix(in srgb, #3d7adf 20%, var(--campaign-panel));
+  border-color: color-mix(in srgb, #3d7adf 40%, var(--campaign-stroke));
+}
+
+.poll-bar--result.poll-bar--lead-trump {
+  background: linear-gradient(to top, #e7f6ec 0%, #f7cdc8 100%);
+  border-color: #efb2ac;
+}
+
+.poll-bar--result.poll-bar--lead-democrat {
+  background: linear-gradient(to top, #bfe8cf 0%, #d3e4fc 100%);
+  border-color: #b7cff6;
+}
+
+[data-theme="dark"] .poll-bar--result.poll-bar--lead-trump {
+  background: linear-gradient(to top, #1c4034 0%, #5a2a2c 100%);
+  border-color: rgba(226, 59, 50, 0.45);
+}
+
+[data-theme="dark"] .poll-bar--result.poll-bar--lead-democrat {
+  background: linear-gradient(to top, #1a4a34 0%, #1c335c 100%);
+  border-color: rgba(61, 122, 223, 0.45);
+}
+
+.poll-bar--result {
+  width: auto;
+  min-width: 9.2rem;
+}
+
+.poll-bar__votes {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  margin-left: 0.2rem;
+  padding-left: 0.55rem;
+  border-left: 1px solid color-mix(in srgb, var(--campaign-ink) 18%, transparent);
+}
+
+.poll-bar__votes-label {
+  margin-bottom: 0.28rem;
+  color: var(--campaign-subtle);
+  font-size: 0.62rem;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.poll-bar__votes .poll-bar__pair {
+  flex: 1;
+  min-height: 0;
+}
+
+.poll-bar--result .poll-bar__pollster {
+  background: #f4fff7;
+  color: #145c32;
+  box-shadow: inset 0 -2px 0 #1f8a4c;
+}
+
+.poll-bar__pair {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  gap: 0.45rem;
+  height: 100%;
+  min-height: 8.8rem;
+}
+
+.poll-bar__col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.35rem;
+  height: 100%;
+}
+
+.poll-bar__pct {
+  color: var(--campaign-ink);
+  font-size: 1.35rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.04em;
+  line-height: 1;
+}
+
+.poll-bar__track {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  width: 2.35rem;
+  flex: 1 1 auto;
+  height: auto;
+  min-height: 7.4rem;
+  padding: 0.28rem 0.28rem 0;
+  border-radius: 999px;
+}
+
+.poll-bar__track--trump {
+  background: linear-gradient(180deg, rgba(226, 59, 50, 0.08), rgba(226, 59, 50, 0.16));
+}
+
+.poll-bar__track--biden {
+  background: linear-gradient(180deg, rgba(61, 122, 223, 0.08), rgba(61, 122, 223, 0.18));
+}
+
+.poll-bar__track--harris {
+  background: linear-gradient(180deg, rgba(29, 79, 156, 0.08), rgba(29, 79, 156, 0.2));
+}
+
+.poll-bar__track--news {
+  background: linear-gradient(180deg, rgba(245, 197, 24, 0.12), rgba(245, 197, 24, 0.24));
+}
+
+.poll-bar__fill {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.45rem;
+  border-radius: 999px;
+}
+
+.poll-bar__name {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  margin: 0;
+  padding: 0.24rem 0.45rem;
+  border-radius: 999px;
+  background: #b4231c;
+  color: white;
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.poll-bar__name--biden {
+  background: #1d4f9c;
+}
+
+.poll-bar__name--harris {
+  background: #14356b;
+}
+
+.poll-bar__track:hover .poll-bar__name,
+.poll-bar__track:focus-within .poll-bar__name {
+  opacity: 1;
+}
+
+.poll-bar__swatch--trump,
+.poll-bar__dot--trump,
+.poll-bar__fill--trump {
+  background: linear-gradient(180deg, #ffb4ac 0%, #e23b32 58%, #b4231c 100%);
+}
+
+.poll-bar__swatch--biden,
+.poll-bar__dot--biden,
+.poll-bar__fill--biden {
+  background: linear-gradient(180deg, #c5dcff 0%, #3d7adf 58%, #1d4f9c 100%);
+}
+
+.poll-bar__swatch--harris,
+.poll-bar__dot--harris,
+.poll-bar__fill--harris {
+  background: linear-gradient(180deg, #9eb6e8 0%, #1d4f9c 58%, #14356b 100%);
+}
+
+.poll-bar__fill--news {
+  background: linear-gradient(180deg, #ffe58a 0%, #f5c518 58%, #d39b00 100%);
+}
+
+.poll-bar__pct--news {
+  color: #a16207;
+  font-size: 1.05rem;
+}
+
+.poll-bar--news {
+  width: 9.6rem;
+}
+
+.poll-bar--news .poll-bar__pollster {
+  max-width: 8.6rem;
+}
+
+.poll-bar__swatch {
+  width: 0.7rem;
+  height: 0.7rem;
+  border-radius: 0.2rem;
+}
+
+.poll-bar__date {
+  margin: 0.2rem 0 0;
+  color: var(--campaign-subtle);
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-align: center;
+}
+
+.poll-bar__pollster {
+  margin: 0;
+  max-width: 7.6rem;
+  padding: 0.32rem 0.4rem;
+  border: 1px solid var(--campaign-stroke);
+  border-radius: 0;
+  background: color-mix(in srgb, var(--campaign-panel) 70%, white);
+  box-shadow: none;
+  color: var(--campaign-ink);
+  font-size: 0.68rem;
+  font-weight: 800;
+  line-height: 1.25;
+  text-align: center;
+}
+
+.poll-bar__dots {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.poll-bar__dot {
+  width: 0.48rem;
+  height: 0.48rem;
+  border-radius: 50%;
+}
+
+.poll-note {
+  margin: 0.9rem 0 0;
+  color: var(--campaign-subtle);
+  font-size: 0.84rem;
+  line-height: 1.5;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 .timeline-list {
   padding: 0.6rem clamp(1.2rem, 4vw, 3rem);
   background: var(--campaign-panel);
@@ -525,6 +1058,21 @@
   border-color: transparent;
 }
 
+.timeline-stage.is-done .timeline-stage__rail span {
+  background: #1f8a4c;
+  border-color: transparent;
+  color: white;
+}
+
+.timeline-stage.is-done .timeline-stage__rail::after {
+  background: #1f8a4c;
+}
+
+.timeline-past-title {
+  margin: 0.4rem 0 0;
+  font-size: clamp(1.35rem, 2.4vw, 1.8rem);
+}
+
 .timeline-stage__body {
   padding: 1.8rem 0;
   border-bottom: 1px solid var(--campaign-stroke);
@@ -564,12 +1112,291 @@
   line-height: 1.55;
 }
 
+.us-map {
+  display: block;
+  width: 80%;
+  height: auto;
+  margin-top: 0.4rem;
+}
+
+.us-map__state {
+  stroke: color-mix(in srgb, var(--campaign-panel) 70%, white);
+  stroke-width: 1.1;
+}
+
+.us-map__state.is-trump,
+.us-map__state.is-romney {
+  fill: #e23b32;
+}
+
+.us-map__state.is-harris,
+.us-map__state.is-biden,
+.us-map__state.is-clinton,
+.us-map__state.is-obama {
+  fill: #1d4f9c;
+}
+
+.us-map__state.is-open {
+  fill: var(--map-open);
+}
+
+.us-map.is-open .us-map__label {
+  fill: var(--map-open-ink);
+}
+
+.us-map__label {
+  fill: white;
+  font-weight: 800;
+  text-anchor: middle;
+  dominant-baseline: central;
+  pointer-events: none;
+}
+
+.us-map__votes {
+  font-weight: 700;
+  font-size: 0.78em;
+}
+
+.us-map-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.85rem 1.2rem;
+  margin: 0.2rem 0 0.55rem;
+}
+
+.us-map-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  color: var(--campaign-ink);
+  font-size: 0.82rem;
+  font-weight: 800;
+}
+
+.us-map-legend i {
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 0.15rem;
+}
+
+.us-map-legend i.is-trump,
+.us-map-legend i.is-romney {
+  background: #e23b32;
+}
+
+.us-map-legend i.is-harris,
+.us-map-legend i.is-biden,
+.us-map-legend i.is-clinton,
+.us-map-legend i.is-obama {
+  background: #1d4f9c;
+}
+
 .campaign-footer {
   color: var(--campaign-subtle);
 }
 
 .campaign-footer strong {
   color: var(--campaign-ink);
+}
+
+.poll-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 0.85rem;
+}
+
+.poll-more {
+  height: 1px;
+}
+
+.poll-bar--loading {
+  position: sticky;
+  left: 0;
+  z-index: 2;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  width: 11.5rem;
+}
+
+.poll-load__bars {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 0.7rem;
+  width: 100%;
+  height: 9.4rem;
+}
+
+.poll-load__bars span {
+  width: 1.7rem;
+  height: 4.8rem;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(61, 122, 223, 0.35), rgba(226, 59, 50, 0.45));
+  transform-origin: center bottom;
+  animation: poll-load-grow 0.8s ease-in-out infinite alternate;
+}
+
+.poll-load__bars span:last-child {
+  height: 7.4rem;
+  animation-delay: 0.16s;
+}
+
+.poll-bar--loading::after,
+.poll-row--loading::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(100deg, transparent 15%, color-mix(in srgb, white 42%, transparent) 48%, transparent 80%);
+  transform: translateX(-120%);
+  animation: poll-load-sheen 1.15s ease-in-out infinite;
+  pointer-events: none;
+}
+
+.poll-load__label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.45rem;
+  margin: 0;
+  color: var(--campaign-subtle);
+  font-size: 0.72rem;
+  font-weight: 800;
+  line-height: 1.3;
+  text-align: center;
+}
+
+.poll-row--loading {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  overflow: hidden;
+  min-height: 4.4rem;
+}
+
+.poll-load__dots {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.poll-load__dots i {
+  width: 0.48rem;
+  height: 0.48rem;
+  border-radius: 999px;
+  background: #3d7adf;
+  animation: poll-load-dot 0.9s ease-in-out infinite;
+}
+
+.poll-load__dots i:nth-child(2) {
+  animation-delay: 0.15s;
+  background: #e23b32;
+}
+
+.poll-load__dots i:nth-child(3) {
+  animation-delay: 0.3s;
+}
+
+@keyframes poll-load-grow {
+  from { transform: scaleY(0.45); }
+  to { transform: scaleY(1); }
+}
+
+@keyframes poll-load-sheen {
+  to { transform: translateX(120%); }
+}
+
+@keyframes poll-load-dot {
+  0%, 80%, 100% { transform: translateY(0); opacity: 0.45; }
+  40% { transform: translateY(-0.28rem); opacity: 1; }
+}
+
+.poll-row.poll-bar--result {
+  width: auto;
+}
+
+.poll-row {
+  display: grid;
+  grid-template-columns: minmax(7.6rem, 11.5rem) minmax(0, 1fr);
+  gap: 0.7rem 1rem;
+  align-items: center;
+  padding: 0.9rem 1rem;
+  border: 1px solid var(--campaign-stroke);
+  border-radius: 1.15rem;
+  background: color-mix(in srgb, var(--campaign-panel) 88%, white);
+  box-shadow: 0 14px 28px rgba(23, 41, 65, 0.08);
+}
+
+.poll-row__meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.poll-row__meta .poll-bar__pollster {
+  max-width: 100%;
+}
+
+.poll-row__scores {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  min-width: 0;
+}
+
+.poll-row__bars {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+  min-width: 0;
+}
+
+.poll-row__line {
+  display: grid;
+  grid-template-columns: 4.8rem minmax(0, 1fr) 2.8rem;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.poll-row__who {
+  color: var(--campaign-ink);
+  font-size: 0.82rem;
+  font-weight: 800;
+  line-height: 1.2;
+}
+
+.poll-row__track {
+  height: 0.85rem;
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.poll-row__fill {
+  display: block;
+  height: 100%;
+  border-radius: 999px;
+}
+
+.poll-row__pct {
+  color: var(--campaign-ink);
+  font-size: 1.05rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  text-align: end;
+}
+
+.poll-row__note {
+  margin: 0;
+  color: var(--campaign-subtle);
+  font-size: 0.78rem;
+  font-weight: 700;
+  line-height: 1.35;
 }
 
 @media (max-width: 880px) {
@@ -584,8 +1411,15 @@
     justify-content: center;
   }
 
-  .campaign-hero {
+  .campaign-hero,
+  .timeline-intro {
     grid-template-columns: 1fr;
+    padding-right: 1.15rem;
+  }
+
+  .candidate-pair,
+  .candidate-pair img {
+    min-height: 12.5rem;
   }
 
   .election-date-card {
@@ -598,33 +1432,102 @@
     padding-bottom: 0;
   }
 
+  .page-shell {
+    width: min(1180px, calc(100% - 1.5rem));
+  }
+
+  .campaign-kicker {
+    letter-spacing: 0.06em;
+    line-height: 1.35;
+  }
+
+  .campaign-hero h1 {
+    font-size: clamp(2.15rem, 10vw, 3.1rem);
+  }
+
+  .campaign-page-intro h1 {
+    font-size: clamp(1.9rem, 8.2vw, 2.7rem);
+  }
+
+  .campaign-hero,
+  .campaign-page-intro {
+    padding: 1.15rem 1rem 1.25rem;
+  }
+
+  .campaign-panel {
+    padding: 1rem;
+  }
+
+  .campaign-facts > div {
+    padding: 1rem 1.05rem;
+  }
+
   .campaign-header__inner {
-    width: min(100% - 1.2rem, 1180px);
+    width: min(100% - 1rem, 1180px);
+    grid-template-columns: minmax(0, 1fr) auto;
     gap: 0.65rem;
   }
 
+  .campaign-header .brand {
+    min-width: 0;
+  }
+
+  .campaign-header .brand__copy {
+    min-width: 0;
+  }
+
   .campaign-header .brand__copy em {
+    overflow: hidden;
     font-size: 0.62rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .campaign-header__tools {
     gap: 0.35rem;
   }
 
-  .campaign-header__tools .theme-switcher__btn {
-    width: 1.45rem;
-    height: 1.45rem;
-  }
-
   .campaign-nav {
     width: 100%;
+    max-width: 100%;
+    min-width: 0;
   }
 
   .campaign-nav__link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     flex: 1;
     min-width: 0;
-    padding-inline: 0.25rem;
-    font-size: 0.8rem;
+    min-height: 2.5rem;
+    padding: 0.35rem 0.4rem;
+    font-size: 0.78rem;
+    line-height: 1.15;
+  }
+
+  .language-switch button {
+    min-width: 2.5rem;
+    min-height: 2.25rem;
+  }
+
+  .campaign-header__tools .theme-switcher__btn {
+    width: 2rem;
+    height: 2rem;
+  }
+
+  .poll-tabs button {
+    min-height: 2.6rem;
+    padding: 0.45rem 0.8rem;
+    font-size: 0.78rem;
+  }
+
+  .poll-chips button,
+  .poll-bar-legend button {
+    min-height: 2.25rem;
+  }
+
+  .us-map {
+    width: 100%;
   }
 
   .campaign-hero {
@@ -646,8 +1549,48 @@
     align-items: flex-start;
     flex-direction: column;
   }
+
+  .poll-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .campaign-header__inner {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .campaign-header .brand {
+    grid-row: 1;
+  }
+
+  .campaign-header__tools {
+    grid-row: 2;
+    grid-column: 1;
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .campaign-nav {
+    grid-row: 3;
+    grid-column: 1;
+  }
+
+  .language-switch button {
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+  }
+
+  .campaign-header__tools .theme-switcher__btn {
+    width: 2.75rem;
+    height: 2.75rem;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .campaign-nav__link { transition: none; }
+  .poll-load__bars span,
+  .poll-load__dots i,
+  .poll-bar--loading::after,
+  .poll-row--loading::after { animation: none; }
 }

@@ -24,6 +24,15 @@
         { "fieldPath": "race_type", "order": "ASCENDING" },
         { "fieldPath": "end_date", "order": "DESCENDING" }
       ]
+    },
+    {
+      "collectionGroup": "historical_polls",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "cycle", "order": "ASCENDING" },
+        { "fieldPath": "recorded_on", "order": "DESCENDING" },
+        { "fieldPath": "__name__", "order": "DESCENDING" }
+      ]
     }
   ],
   "fieldOverrides": [

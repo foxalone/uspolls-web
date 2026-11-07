@@ -27,6 +27,11 @@ service cloud.firestore {
     //
     // Collection: system/votehub_sync
     // Importer watermark / lock. Admin SDK only.
+    //
+    // Collection: historical_polls/{id}
+    // 2024 national head-to-head archive: Trump–Biden, then Trump–Harris
+    // from July 21, 2024. Written by scripts/seed-trump-biden-2024.ts.
+    // Public pages read it on the server. The browser never queries Firestore.
     // ===============================================================
 
     function isValidPoll() {
@@ -87,6 +92,10 @@ service cloud.firestore {
       allow read: if false;
       allow create, update: if false && isValidSync();
       allow delete: if false;
+    }
+
+    match /historical_polls/{pollId} {
+      allow read, write: if false;
     }
 
     match /{document=**} {

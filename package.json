@@ -10,6 +10,10 @@
     "build": "next build",
     "start": "next start",
     "sync:votehub": "tsx scripts/sync-votehub.ts",
+    "seed:2024": "tsx scripts/seed-trump-biden-2024.ts",
+    "seed:2020": "tsx scripts/seed-trump-biden-2020.ts",
+    "seed:2016": "tsx scripts/seed-trump-clinton-2016.ts",
+    "seed:2012": "tsx scripts/seed-obama-romney-2012.ts",
     "test:votehub": "tsx --test src/lib/votehub/*.test.ts src/lib/polls/*.test.ts"
   },
   "dependencies": {
