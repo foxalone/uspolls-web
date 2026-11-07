@@ -85,6 +85,7 @@ export const SITE = {
   name: "US Polls",
   tagline: "House & Senate midterm monitor",
   year: 2026,
+  url: "https://uspolls-web.vercel.app",
 };
 
 export const GENERIC_BALLOT = {

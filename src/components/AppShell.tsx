@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { Header } from "./Header";
-import { InstallPrompt } from "./InstallPrompt";
 import { ThemeProvider } from "./ThemeProvider";
+import { LanguageProvider, useLanguage } from "../lib/language";
 
 type AppShellProps = {
   children: ReactNode;
@@ -10,27 +10,23 @@ type AppShellProps = {
 export function AppShell({ children }: AppShellProps) {
   return (
     <ThemeProvider>
-      <div className="app-shell">
-        <Header />
-        <main className="page-shell">
-          <div className="page-shell__content">{children}</div>
-        </main>
-        <footer className="site-footer">
-          <p>
-            <strong>US Polls</strong> — a public tracker for House and Senate polls,
-            prediction markets, and campaign metrics for the November 2026 midterms.
-          </p>
-          <p>
-            Polling data from{" "}
-            <a href="https://votehub.com/polls/api/" rel="noreferrer" target="_blank">
-              VoteHub
-            </a>{" "}
-            (CC BY 4.0). Informational only. Not political advice, not a forecast
-            you should bet on, and not an official election result.
-          </p>
-        </footer>
-        <InstallPrompt />
-      </div>
+      <LanguageProvider><ShellContent>{children}</ShellContent></LanguageProvider>
     </ThemeProvider>
+  );
+}
+
+function ShellContent({ children }: AppShellProps) {
+  const { language } = useLanguage();
+  return (
+    <div className="app-shell">
+      <Header />
+      <main className="page-shell"><div className="page-shell__content">{children}</div></main>
+      <footer className="site-footer campaign-footer">
+        <strong>US Polls · 2028</strong>
+        <p>{language === "en"
+          ? "An independent guide to the U.S. presidential election. Polls will appear only with a traceable source, field dates, and sample details. No candidate endorsements or election forecasts."
+          : "Una guía independiente de la elección presidencial de EE. UU. Las encuestas aparecerán solo con fuente verificable, fechas de campo y datos de la muestra. Sin respaldos a candidatos ni pronósticos electorales."}</p>
+      </footer>
+    </div>
   );
 }

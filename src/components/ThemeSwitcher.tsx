@@ -1,4 +1,5 @@
 import { useTheme } from "./ThemeProvider";
+import { useLanguage } from "../lib/language";
 import type { ThemePreference } from "../lib/theme";
 
 const OPTIONS: { id: ThemePreference; label: string }[] = [
@@ -35,15 +36,17 @@ function ThemeIcon({ name }: { name: ThemePreference }) {
 
 export function ThemeSwitcher() {
   const { preference, setPreference } = useTheme();
+  const { language } = useLanguage();
+  const labels = language === "es" ? { light: "Claro", dark: "Oscuro", auto: "Automático" } : { light: "Light", dark: "Dark", auto: "Auto" };
 
   return (
-    <div aria-label="Color theme" className="theme-switcher" role="radiogroup">
+    <div aria-label={language === "es" ? "Tema de color" : "Color theme"} className="theme-switcher" role="radiogroup">
       {OPTIONS.map((option) => {
         const selected = preference === option.id;
         return (
           <button
             aria-checked={selected}
-            aria-label={option.label}
+            aria-label={labels[option.id]}
             className={`theme-switcher__btn${selected ? " is-active" : ""}`}
             key={option.id}
             onClick={() => setPreference(option.id)}

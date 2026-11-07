@@ -1,8 +1,8 @@
 {
   "id": "/",
-  "name": "US Polls — Midterm Monitor ’26",
+  "name": "US Polls — Presidential Election 2028",
   "short_name": "US Polls",
-  "description": "House and Senate polls, prediction markets, and campaign metrics for the November 2026 midterms.",
+  "description": "A source-led guide to the 2028 U.S. presidential election, its polls and timeline.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
