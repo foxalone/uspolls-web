@@ -1,12 +1,16 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useLanguage } from "../lib/language";
+import { CHROME, useLanguage, type Language } from "../lib/language";
 import { NAV } from "../lib/nav";
 import { ThemeSwitcher } from "./ThemeSwitcher";
 
+const PUBLIC_LANGUAGES: Language[] = ["en", "es"];
+
 export function Header() {
   const router = useRouter();
-  const { language, setLanguage } = useLanguage();
+  const { language, setLanguage, ruAllowed } = useLanguage();
+  const ui = CHROME[language];
+  const languages: Language[] = ruAllowed ? [...PUBLIC_LANGUAGES, "ru"] : PUBLIC_LANGUAGES;
 
   return (
     <header className="site-header campaign-header">
@@ -15,11 +19,11 @@ export function Header() {
           <span className="brand__mark" aria-hidden="true">US</span>
           <span className="brand__copy">
             <strong>US Polls</strong>
-            <em>{language === "en" ? "Presidential race · 2028" : "Carrera presidencial · 2028"}</em>
+            <em>{ui.brand}</em>
           </span>
         </Link>
 
-        <nav aria-label={language === "en" ? "Main navigation" : "Navegación principal"} className="campaign-nav">
+        <nav aria-label={ui.nav} className="campaign-nav">
           {NAV.map((item) => (
             <Link
               aria-current={router.pathname === item.href ? "page" : undefined}
@@ -33,9 +37,18 @@ export function Header() {
         </nav>
 
         <div className="campaign-header__tools">
-          <div aria-label={language === "en" ? "Language" : "Idioma"} className="language-switch" role="group">
-            <button aria-pressed={language === "en"} className={language === "en" ? "is-active" : ""} onClick={() => setLanguage("en")} type="button">EN</button>
-            <button aria-pressed={language === "es"} className={language === "es" ? "is-active" : ""} onClick={() => setLanguage("es")} type="button">ES</button>
+          <div aria-label={ui.language} className="language-switch" role="group">
+            {languages.map((code) => (
+              <button
+                aria-pressed={language === code}
+                className={language === code ? "is-active" : ""}
+                key={code}
+                onClick={() => setLanguage(code)}
+                type="button"
+              >
+                {code.toUpperCase()}
+              </button>
+            ))}
           </div>
           <ThemeSwitcher />
         </div>

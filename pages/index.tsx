@@ -2,7 +2,7 @@ import Head from "next/head";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { PRESIDENTIAL_ELECTION_DATE } from "../src/data/presidential2028";
-import { useLanguage } from "../src/lib/language";
+import { languageLocale, useLanguage, type Language } from "../src/lib/language";
 
 const copy = {
   en: {
@@ -61,7 +61,44 @@ const copy = {
     card3Text: "Una vista del Colegio Electoral cuando haya encuestas estatales comparables. Sin mapas prematuros basados en conjeturas.",
     sourceNote: "Fecha y proceso oficiales: USA.gov. No se mostrarán cifras de encuestas hasta verificar sus fuentes.",
   },
+  ru: {
+    title: "Дорога в Белый дом",
+    description: "Понятный справочник по президентским выборам в США 2028 года: опросы с указанием источника и ключевые даты.",
+    eyebrow: "Президентские выборы в США · 2028",
+    lead: "Одно место, чтобы следить за гонкой: проверенные опросы, путь через праймериз и коллегия выборщиков.",
+    dateLabel: "День выборов",
+    date: "7 ноября 2028",
+    days: "дней осталось",
+    dayOf: "Сегодня день выборов",
+    pollLink: "Смотреть опросы",
+    timelineLink: "Открыть календарь",
+    facts: "Выборы коротко",
+    electors: "голосов выборщиков",
+    threshold: "чтобы победить",
+    jurisdictions: "избирательных юрисдикций",
+    process: "Как устроены выборы",
+    processText: "Избиратели выбирают президентских выборщиков по штатам. В большинстве штатов все голоса выборщиков получает победитель в штате; в Мэне и Небраске голоса распределяются иначе. Чтобы победить, нужно не меньше 270 из 538 голосов.",
+    processSource: "Как работает коллегия выборщиков ↗",
+    track: "Что будет на этом сайте",
+    trackIntro: "Сайт рассчитан на долгую кампанию: за каждой цифрой стоит источник.",
+    card1: "Президентские опросы",
+    card1Text: "Общенациональные опросы и опросы по штатам: институт, даты поля, выборка и ссылка на исходную публикацию.",
+    card2: "Календарь номинации",
+    card2Text: "Праймериз, съезды и дебаты — по мере того, как штаты и партии подтверждают даты.",
+    card3: "Путь к 270",
+    card3Text: "Карта коллегии выборщиков появится, когда будут сопоставимые опросы по штатам. Без ранней карты на догадках.",
+    sourceNote: "Официальная дата и порядок выборов: USA.gov. Цифры опросов не появятся, пока источники не проверены.",
+  },
 } as const;
+
+function daysLeftLabel(language: Language, count: number) {
+  if (language !== "ru") return copy[language].days;
+  const n10 = count % 10;
+  const n100 = count % 100;
+  if (n10 === 1 && n100 !== 11) return "день остался";
+  if (n10 >= 2 && n10 <= 4 && (n100 < 12 || n100 > 14)) return "дня осталось";
+  return "дней осталось";
+}
 
 export default function IndexPage() {
   const { language } = useLanguage();
@@ -98,7 +135,7 @@ export default function IndexPage() {
             <span className="election-date-card__label">{t.dateLabel}</span>
             <strong>{t.date}</strong>
             <div className="election-date-card__rule" />
-            <p aria-live="polite">{daysLeft === null ? "—" : daysLeft === 0 ? t.dayOf : <><b>{daysLeft.toLocaleString(language === "es" ? "es-ES" : "en-US")}</b> {t.days}</>}</p>
+            <p aria-live="polite">{daysLeft === null ? "—" : daysLeft === 0 ? t.dayOf : <><b>{daysLeft.toLocaleString(languageLocale(language))}</b> {daysLeftLabel(language, daysLeft)}</>}</p>
           </div>
         </section>
 

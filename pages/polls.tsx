@@ -1,7 +1,7 @@
 import Head from "next/head";
 import Link from "next/link";
 import { PRESIDENTIAL_POLLS } from "../src/data/presidential2028";
-import { useLanguage } from "../src/lib/language";
+import { languageLocale, useLanguage } from "../src/lib/language";
 
 const copy = {
   en: {
@@ -48,6 +48,34 @@ const copy = {
     sample: "muestra",
     source: "Fuente original ↗",
   },
+  ru: {
+    eyebrow: "Опросы 2028",
+    title: "Президентские опросы",
+    description: "Раздел с источниками для общенациональных опросов, опросов по штатам и праймериз президентской гонки 2028 года.",
+    lead: "У каждого опроса есть свой вопрос, место и время. Сначала покажем эти подробности, и только потом — динамику.",
+    count: "проверенных опросов",
+    emptyTitle: "Таблица готова. Данных пока нет.",
+    emptyText: "Проверенные президентские опросы 2028 года ещё не добавлены. У каждого результата будут ссылка на исходный источник, даты поля, размер выборки и кого опрашивали.",
+    criteria: "Что попадает в таблицу",
+    item1: "Вопрос прямо о номинации или президентских выборах 2028 года.",
+    item2: "Названный институт и публично проверяемая исходная публикация.",
+    item3: "Даты поля, размер выборки, кого опрашивали и точные опубликованные результаты.",
+    methodTitle: "Средние появятся после сопоставимых опросов",
+    methodText: "Праймериз и всеобщие выборы не смешиваются. Разных кандидатов, штаты и группы опрошенных мы не сведём в одну заголовочную цифру. Пока нет прозрачного метода и достаточного числа сопоставимых опросов, сайт показывает только результаты с источником.",
+    sourceTitle: "По следу источников",
+    sourceText: "Федеральная избирательная комиссия публикует зарегистрированные кандидатуры. У VoteHub есть открытый API опросов, но его описанные категории ещё не дают проверенную президентскую ленту 2028 года для этого сайта.",
+    fec: "Кандидатуры в FEC ↗",
+    votehub: "Документация API VoteHub ↗",
+    viewCalendar: "Смотреть календарь выборов →",
+    sample: "выборка",
+    source: "Исходный источник ↗",
+  },
+} as const;
+
+const POPULATION = {
+  en: { adults: "adults", registered: "registered voters", likely: "likely voters" },
+  es: { adults: "adultos", registered: "votantes registrados", likely: "votantes probables" },
+  ru: { adults: "взрослые", registered: "зарегистрированные избиратели", likely: "вероятные избиратели" },
 } as const;
 
 export default function PollsPage() {
@@ -75,7 +103,7 @@ export default function PollsPage() {
             {PRESIDENTIAL_POLLS.map((poll) => (
               <article className="campaign-panel poll-entry" key={poll.id}>
                 <div className="poll-entry__head"><div><p className="campaign-section-label">{poll.scope[language]}</p><h2>{poll.question[language]}</h2></div><span>{poll.endDate}</span></div>
-                <p>{poll.pollster} · {poll.startDate}–{poll.endDate} · {poll.sampleSize.toLocaleString(language === "es" ? "es-ES" : "en-US")} {t.sample} · {language === "es" ? { adults: "adultos", registered: "votantes registrados", likely: "votantes probables" }[poll.population] : { adults: "adults", registered: "registered voters", likely: "likely voters" }[poll.population]}</p>
+                <p>{poll.pollster} · {poll.startDate}–{poll.endDate} · {poll.sampleSize.toLocaleString(languageLocale(language))} {t.sample} · {POPULATION[language][poll.population]}</p>
                 <div className="poll-entry__results">{poll.results.map((result) => <span key={result.candidate}><strong>{result.percent}%</strong> {result.candidate}</span>)}</div>
                 <a className="campaign-text-link" href={poll.sourceUrl} rel="noreferrer" target="_blank">{t.source}</a>
               </article>

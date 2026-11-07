@@ -6,7 +6,7 @@ export const PRESIDENTIAL_SITE = {
   url: "https://uspolls-web.vercel.app",
 };
 
-export type TranslatedText = { en: string; es: string };
+export type TranslatedText = { en: string; es: string; ru: string };
 
 export type PresidentialPoll = {
   id: string;

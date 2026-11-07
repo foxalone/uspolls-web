@@ -1,5 +1,5 @@
 import { useTheme } from "./ThemeProvider";
-import { useLanguage } from "../lib/language";
+import { CHROME, useLanguage } from "../lib/language";
 import type { ThemePreference } from "../lib/theme";
 
 const OPTIONS: { id: ThemePreference; label: string }[] = [
@@ -37,10 +37,11 @@ function ThemeIcon({ name }: { name: ThemePreference }) {
 export function ThemeSwitcher() {
   const { preference, setPreference } = useTheme();
   const { language } = useLanguage();
-  const labels = language === "es" ? { light: "Claro", dark: "Oscuro", auto: "Automático" } : { light: "Light", dark: "Dark", auto: "Auto" };
+  const ui = CHROME[language];
+  const labels = { light: ui.light, dark: ui.dark, auto: ui.auto };
 
   return (
-    <div aria-label={language === "es" ? "Tema de color" : "Color theme"} className="theme-switcher" role="radiogroup">
+    <div aria-label={ui.theme} className="theme-switcher" role="radiogroup">
       {OPTIONS.map((option) => {
         const selected = preference === option.id;
         return (
