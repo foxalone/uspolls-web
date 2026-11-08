@@ -278,6 +278,15 @@ export function Historical2024Board({
   const resultLead = leadClass(official.trumpPct, official.democratPct);
   const resultNames = { trump: republican, democrat: official.democrat === "Harris" ? t.harris : official.democrat === "Clinton" ? t.clinton : official.democrat === "Obama" ? t.obama : t.biden, resultFilter: t.resultFilter, electors: t.electors };
   const cardNames = { ...t, trump: republican };
+  const legend = (
+    <div className="poll-bar-legend" role="group" aria-label={t.candidateFilter}>
+      <button type="button" className={sides.trump ? "is-active is-trump" : undefined} aria-pressed={sides.trump} onClick={() => toggleSide("trump")}><i className="poll-bar__swatch poll-bar__swatch--trump" />{republican}</button>
+      {cycle === "2016" ? <button type="button" className={sides.clinton ? "is-active is-biden" : undefined} aria-pressed={sides.clinton} onClick={() => toggleSide("clinton")}><i className="poll-bar__swatch poll-bar__swatch--biden" />{t.clinton}</button> : <button type="button" className={sides.biden ? "is-active is-biden" : undefined} aria-pressed={sides.biden} onClick={() => toggleSide("biden")}><i className="poll-bar__swatch poll-bar__swatch--biden" />{cycle === "2012" ? t.obama : t.biden}</button>}
+      {cycle === "2024" ? <button type="button" className={sides.harris ? "is-active is-harris" : undefined} aria-pressed={sides.harris} onClick={() => toggleSide("harris")}><i className="poll-bar__swatch poll-bar__swatch--harris" />{t.harris}</button> : null}
+      <button type="button" className={resultOnly ? "is-active is-result" : undefined} aria-pressed={resultOnly} onClick={() => choosePollster(resultOnly ? "all" : "result")}><i className="poll-bar__swatch poll-bar__swatch--result" />{t.resultFilter}</button>
+    </div>
+  );
+
   return (
     <section className="poll-archive">
       <div className="campaign-panel">
@@ -290,12 +299,7 @@ export function Historical2024Board({
         </div>
         {visible.length === 0 && !(loading && polls.length === 0) && !selected.loading ? <p className="poll-note">{selected.error ? t.filterLoadError : t.noPollster}</p> : (
           <>
-            <div className="poll-bar-legend" role="group" aria-label={t.candidateFilter}>
-              <button type="button" className={sides.trump ? "is-active is-trump" : undefined} aria-pressed={sides.trump} onClick={() => toggleSide("trump")}><i className="poll-bar__swatch poll-bar__swatch--trump" />{republican}</button>
-              {cycle === "2016" ? <button type="button" className={sides.clinton ? "is-active is-biden" : undefined} aria-pressed={sides.clinton} onClick={() => toggleSide("clinton")}><i className="poll-bar__swatch poll-bar__swatch--biden" />{t.clinton}</button> : <button type="button" className={sides.biden ? "is-active is-biden" : undefined} aria-pressed={sides.biden} onClick={() => toggleSide("biden")}><i className="poll-bar__swatch poll-bar__swatch--biden" />{cycle === "2012" ? t.obama : t.biden}</button>}
-              {cycle === "2024" ? <button type="button" className={sides.harris ? "is-active is-harris" : undefined} aria-pressed={sides.harris} onClick={() => toggleSide("harris")}><i className="poll-bar__swatch poll-bar__swatch--harris" />{t.harris}</button> : null}
-              <button type="button" className={resultOnly ? "is-active is-result" : undefined} aria-pressed={resultOnly} onClick={() => choosePollster(resultOnly ? "all" : "result")}><i className="poll-bar__swatch poll-bar__swatch--result" />{t.resultFilter}</button>
-            </div>
+            {variant === "timeline" ? null : legend}
             {shown.length === 0 && !showResult ? <p className="poll-note">{t.noCandidate}</p> : variant === "timeline" ? (
               <div className="poll-bars" ref={barsRef} role="list" aria-label={lead} aria-busy={loading || selected.loading} onScroll={onBarsScroll}>
                 {loadingMore ? <LoadingMore label={t.loadingMore} /> : null}
@@ -303,6 +307,7 @@ export function Historical2024Board({
                 {showResult ? <TimelineResult language={language} names={resultNames} official={official} trump={sides.trump} democrat={officialOn} lead={resultLead} /> : null}
               </div>
             ) : null}
+            {variant === "timeline" ? legend : null}
           </>
         )}
       </div>

@@ -73,6 +73,11 @@ export function listHistoricalPollsterCounts(cycle: HistoricalCycle) {
   return pollsterCounts[cycle];
 }
 
+export function listAllHistoricalRows() {
+  const cycles: HistoricalCycle[] = [2012, 2016, 2020, 2024];
+  return cycles.flatMap((cycle) => archives[cycle].map((poll) => ({ cycle, poll })));
+}
+
 export function listHistoricalPage(cycle: HistoricalCycle, cursor?: HistoricalCursor) {
   const all = archives[cycle];
   let start = 0;

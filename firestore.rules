@@ -98,6 +98,14 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    match /presidential_news/{itemId} {
+      allow read, write: if false;
+    }
+
+    match /presidential_news_seen/{itemId} {
+      allow read, write: if false;
+    }
+
     match /{document=**} {
       allow read, write: if false;
     }

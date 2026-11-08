@@ -1,0 +1,115 @@
+.allIntro {
+  grid-template-columns: minmax(0, 1fr);
+  padding-right: clamp(1.8rem, 4.7vw, 3.8rem);
+}
+
+.frame,
+.panel {
+  min-width: 0;
+}
+
+.scroller {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  margin-top: 0.35rem;
+  padding: 0.85rem 0.15rem 0.55rem;
+  scrollbar-width: thin;
+}
+
+.scroller:focus-visible {
+  outline: 2px solid var(--campaign-accent);
+  outline-offset: 2px;
+}
+
+.track {
+  position: relative;
+  height: 21rem;
+}
+
+.slot {
+  position: absolute;
+  top: 0;
+  height: 20.2rem;
+}
+
+.slot[data-kind="poll"],
+.slot[data-kind="news"] {
+  width: 184px;
+}
+
+.slot[data-kind="result"] {
+  width: 360px;
+}
+
+.slot[data-kind="result"][data-single="true"] {
+  width: 184px;
+}
+
+.slot :global(.poll-bar__votes.is-solo) {
+  margin: 0;
+  padding-left: 0;
+  border-left: 0;
+}
+
+.switcher {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-top: 0.75rem;
+}
+
+.switcher button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  border: 1px solid var(--campaign-stroke);
+  border-radius: 999px;
+  background: var(--campaign-panel-2);
+  color: var(--campaign-ink);
+  padding: 0.38rem 0.75rem 0.38rem 0.45rem;
+  font: inherit;
+  font-size: 0.82rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.switcher button i {
+  width: 1.05rem;
+  height: 1.05rem;
+  box-sizing: border-box;
+  border: 2px solid var(--campaign-subtle);
+  border-radius: 0.28rem;
+  background: transparent;
+}
+
+.switcher button[aria-pressed="true"] {
+  border-color: #1f8a4c;
+  background: #1f8a4c;
+  color: white;
+}
+
+.switcher button[aria-pressed="true"] i {
+  border-color: white;
+  background-color: white;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='M3.2 8.3 6.4 11.4 12.8 4.6' fill='none' stroke='%23145c32' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 0.85rem;
+}
+
+.slot :global(.poll-bar) {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+}
+
+.slot :global(.poll-bar__col) {
+  width: 4.4rem;
+}
+
+.status {
+  margin: 0.45rem 0 0;
+  color: var(--campaign-subtle);
+  font-size: 0.78rem;
+}

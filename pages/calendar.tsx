@@ -2,6 +2,8 @@ import Head from "next/head";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { CandidatePair } from "../src/components/CandidatePair";
+import { AllElectionTimeline } from "../src/components/AllElectionTimeline";
+import allTimelineStyles from "../src/components/AllElectionTimeline.module.css";
 import { Historical2024Board } from "../src/components/Historical2024Board";
 import { Us2024ResultsSection } from "../src/components/Us2024Map";
 import { useLanguage } from "../src/lib/language";
@@ -10,7 +12,8 @@ const copy = {
   en: {
     eyebrow: "Road to Election Day",
     title: "Timeline",
-    description: "The 2012, 2016, 2020 and 2024 national poll timelines, and the key stages of the 2028 presidential election.",
+    description: "Presidential results from 1988, national polls from 2012, and the key stages of the 2028 election.",
+    tabAll: "All",
     tab2012: "2012 · Romney / Obama",
     tab2016: "2016 · Trump / Clinton",
     tab2020: "2020 · Trump / Biden",
@@ -91,7 +94,8 @@ const copy = {
   es: {
     eyebrow: "Rumbo al día de las elecciones",
     title: "Línea de tiempo",
-    description: "Las líneas de encuestas nacionales de 2012, 2016, 2020 y 2024, y las etapas clave de la elección presidencial de 2028.",
+    description: "Resultados presidenciales desde 1988, encuestas nacionales desde 2012 y etapas clave de la elección de 2028.",
+    tabAll: "Todas",
     tab2012: "2012 · Romney / Obama",
     tab2016: "2016 · Trump / Clinton",
     tab2020: "2020 · Trump / Biden",
@@ -172,7 +176,8 @@ const copy = {
   ru: {
     eyebrow: "Путь ко дню выборов",
     title: "Таймлайн",
-    description: "Ленты общенациональных опросов 2012, 2016, 2020 и 2024 годов и ключевые этапы президентских выборов 2028 года.",
+    description: "Итоги президентских выборов с 1988 года, общенациональные опросы с 2012-го и ключевые этапы выборов 2028 года.",
+    tabAll: "Все",
     tab2012: "2012 · Ромни / Обама",
     tab2016: "2016 · Трамп / Клинтон",
     tab2020: "2020 · Трамп / Байден",
@@ -252,38 +257,59 @@ const copy = {
   },
 } as const;
 
-type TimelineTab = "2012" | "2016" | "2020" | "2024" | "2028";
+type TimelineTab = "all" | "2012" | "2016" | "2020" | "2024" | "2028";
 
 export default function CalendarPage() {
   const { language } = useLanguage();
   const t = copy[language];
   const [tab, setTab] = useState<TimelineTab>("2024");
   useEffect(() => {
-    document.getElementById(`timeline-tab-${tab}`)?.scrollIntoView({ inline: "nearest", block: "nearest" });
-  }, [tab]);
+    const node = document.getElementById(`timeline-tab-${tab}`);
+    const list = node?.parentElement;
+    if (!node || !list?.classList.contains("poll-tabs__rest")) return;
+    const view = list.clientWidth;
+    let scroll = Math.max(0, node.offsetLeft + node.offsetWidth - view);
+    for (const button of list.querySelectorAll("button")) {
+      const start = button.offsetLeft;
+      const end = start + button.offsetWidth;
+      if (start < scroll && end > scroll) {
+        scroll = end;
+        break;
+      }
+    }
+    if (node.offsetLeft < scroll) scroll = node.offsetLeft;
+    list.scrollLeft = scroll;
+  }, [tab, language]);
   return (
     <>
       <Head><title>{t.title} | US Polls 2028</title><meta name="description" content={t.description} /></Head>
       <div className="campaign-stack">
-        <section className="campaign-page-intro timeline-intro">
+        <section className={`campaign-page-intro timeline-intro${tab === "all" ? ` ${allTimelineStyles.allIntro}` : ""}`}>
           <div className="timeline-intro__copy">
             <p className="campaign-kicker"><span className="campaign-kicker__dot" />{t.eyebrow}</p>
             <h1>{t.title}</h1>
             <div className="poll-tabs" role="tablist" aria-label={t.title}>
-              <button type="button" role="tab" id="timeline-tab-2012" aria-selected={tab === "2012"} aria-controls="timeline-panel-2012" className={tab === "2012" ? "is-active" : undefined} onClick={() => setTab("2012")}>{t.tab2012}</button>
-              <button type="button" role="tab" id="timeline-tab-2016" aria-selected={tab === "2016"} aria-controls="timeline-panel-2016" className={tab === "2016" ? "is-active" : undefined} onClick={() => setTab("2016")}>{t.tab2016}</button>
-              <button type="button" role="tab" id="timeline-tab-2020" aria-selected={tab === "2020"} aria-controls="timeline-panel-2020" className={tab === "2020" ? "is-active" : undefined} onClick={() => setTab("2020")}>{t.tab2020}</button>
-              <button type="button" role="tab" id="timeline-tab-2024" aria-selected={tab === "2024"} aria-controls="timeline-panel-2024" className={tab === "2024" ? "is-active" : undefined} onClick={() => setTab("2024")}>{t.tab2024}</button>
-              <button type="button" role="tab" id="timeline-tab-2028" aria-selected={tab === "2028"} aria-controls="timeline-panel-2028" className={tab === "2028" ? "is-active" : undefined} onClick={() => setTab("2028")}>{t.tab2028}</button>
+              <button type="button" role="tab" id="timeline-tab-all" aria-selected={tab === "all"} aria-controls="timeline-panel-all" className={tab === "all" ? "is-active" : undefined} onClick={() => setTab("all")}>{t.tabAll}</button>
+              <div className="poll-tabs__rest">
+                <button type="button" role="tab" id="timeline-tab-2012" aria-selected={tab === "2012"} aria-controls="timeline-panel-2012" className={tab === "2012" ? "is-active" : undefined} onClick={() => setTab("2012")}>{t.tab2012}</button>
+                <button type="button" role="tab" id="timeline-tab-2016" aria-selected={tab === "2016"} aria-controls="timeline-panel-2016" className={tab === "2016" ? "is-active" : undefined} onClick={() => setTab("2016")}>{t.tab2016}</button>
+                <button type="button" role="tab" id="timeline-tab-2020" aria-selected={tab === "2020"} aria-controls="timeline-panel-2020" className={tab === "2020" ? "is-active" : undefined} onClick={() => setTab("2020")}>{t.tab2020}</button>
+                <button type="button" role="tab" id="timeline-tab-2024" aria-selected={tab === "2024"} aria-controls="timeline-panel-2024" className={tab === "2024" ? "is-active" : undefined} onClick={() => setTab("2024")}>{t.tab2024}</button>
+                <button type="button" role="tab" id="timeline-tab-2028" aria-selected={tab === "2028"} aria-controls="timeline-panel-2028" className={tab === "2028" ? "is-active" : undefined} onClick={() => setTab("2028")}>{t.tab2028}</button>
+              </div>
             </div>
           </div>
-          <CandidatePair
+          {tab === "all" ? null : <CandidatePair
             cycle={tab}
             names={{ obama: t.obama, romney: t.romney, trump: t.trump, biden: t.biden, clinton: t.clinton, harris: t.harris }}
             openLabel={language === "ru" ? "Кандидаты ещё не определены" : language === "es" ? "Los candidatos aún no están definidos" : "Nominees are not set yet"}
-          />
+          />}
         </section>
-        {tab === "2012" ? (
+        {tab === "all" ? (
+          <div role="tabpanel" id="timeline-panel-all" aria-labelledby="timeline-tab-all" className={allTimelineStyles.frame}>
+            <AllElectionTimeline />
+          </div>
+        ) : tab === "2012" ? (
           <div role="tabpanel" id="timeline-panel-2012" aria-labelledby="timeline-tab-2012" className="campaign-stack">
             <Historical2024Board key="timeline-2012" variant="timeline" cycle="2012" />
             <Us2024ResultsSection title={t.mapTitle2012} text={t.mapText2012} trump={t.romney} harris={t.obama} cycle="2012" />

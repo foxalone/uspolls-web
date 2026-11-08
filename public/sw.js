@@ -1,8 +1,9 @@
-const CACHE = "uspolls-presidential-v1";
+const CACHE = "uspolls-presidential-v2";
 const PRECACHE = [
   "/",
   "/polls",
   "/calendar",
+  "/news",
   "/favicon.svg",
   "/manifest.webmanifest",
   "/icons/icon-192.png",

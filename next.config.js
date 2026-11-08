@@ -3,7 +3,7 @@ const nextConfig = {
   reactStrictMode: true,
   serverExternalPackages: ["firebase-admin", "@google-cloud/firestore"],
   async redirects() {
-    return ["/chambers", "/odds", "/news"].map((source) => ({ source, destination: "/", permanent: false }));
+    return ["/chambers", "/odds"].map((source) => ({ source, destination: "/", permanent: false }));
   },
   async headers() {
     return [
