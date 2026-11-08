@@ -14,7 +14,7 @@ const kindRank = { news: 0, poll: 1, result: 2 };
 const entries: AllElectionEntry[] = [
   ...listAllHistoricalRows().map(({ cycle, poll }) => ({ kind: "poll" as const, id: `${cycle}:${poll.id}`, recordedOn: poll.recordedOn, cycle, poll })),
   ...ELECTION_RESULTS.map((result) => ({ kind: "result" as const, id: `result:${result.year}`, recordedOn: result.recordedOn, result })),
-  { kind: "news", id: "news:2024-07-21", recordedOn: "2024-07-21" },
+  { kind: "news" as const, id: "news:2024-07-21", recordedOn: "2024-07-21" },
 ].sort((a, b) => a.recordedOn.localeCompare(b.recordedOn) || kindRank[a.kind] - kindRank[b.kind] || a.id.localeCompare(b.id));
 
 const pollsterCounts = [...entries.reduce((counts, entry) => {

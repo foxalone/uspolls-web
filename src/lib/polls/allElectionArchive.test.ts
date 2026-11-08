@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { describe, it } from "node:test";
 import { allElectionEntryCount, listAllElectionPage } from "./allElectionArchive";
 
-function label(entry: ReturnType<typeof listAllElectionPage>["entries"][number]) {
+function label(entry: NonNullable<ReturnType<typeof listAllElectionPage>>["entries"][number]) {
   if (entry.kind === "result") return `result:${entry.result.year}`;
   if (entry.kind === "news") return "news";
   return `poll:${entry.cycle}:${entry.recordedOn}`;
@@ -11,6 +11,7 @@ function label(entry: ReturnType<typeof listAllElectionPage>["entries"][number])
 describe("all election archive", () => {
   it("keeps 1988–2008 as results only, then starts the 2012 polls", () => {
     const page = listAllElectionPage(8);
+    assert.ok(page);
     assert.deepEqual(page.entries.map(label), [
       "result:1988",
       "result:1992",
@@ -30,6 +31,7 @@ describe("all election archive", () => {
     let sawNews = false;
     while (offset !== null) {
       const page = listAllElectionPage(offset);
+      assert.ok(page);
       if (offset === total) {
         const end = page.entries.at(-1);
         assert.equal(end?.kind, "result");
