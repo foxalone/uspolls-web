@@ -1,7 +1,7 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { languageLocale, useLanguage, type Language } from "../lib/language";
 import type { HistoricalPollRow } from "../lib/polls/historical";
-import { useHistoricalPages } from "../lib/polls/historicalClient";
+import { useHistoricalPages, useHistoricalPollster } from "../lib/polls/historicalClient";
 
 const copy = {
   en: {
@@ -31,6 +31,7 @@ const copy = {
     electors: "Electors",
     loadingMore: "Loading earlier polls",
     noPollster: "No polls from this pollster.",
+    filterLoadError: "This pollster's polls could not be loaded.",
     noCandidate: "No polls for this selection.",
     news: "News",
     newsHover: "Biden dropped out and Kamala stepped in.",
@@ -65,6 +66,7 @@ const copy = {
     electors: "Electores",
     loadingMore: "Cargando encuestas anteriores",
     noPollster: "No hay encuestas de esta encuestadora.",
+    filterLoadError: "No se pudieron cargar las encuestas de esta encuestadora.",
     noCandidate: "No hay encuestas para esta selección.",
     news: "Noticia",
     newsHover: "Biden se retiró y Kamala entró en la carrera.",
@@ -99,6 +101,7 @@ const copy = {
     electors: "Выборщики",
     loadingMore: "Загружаем более ранние опросы",
     noPollster: "У этого института нет опросов.",
+    filterLoadError: "Не удалось загрузить опросы этого института.",
     noCandidate: "Для этого выбора опросов нет.",
     news: "Новость",
     newsHover: "Байден вышел, и Камала вступила в гонку.",
@@ -160,8 +163,9 @@ export function Historical2024Board({
   const newsOn = cycle === "2024" ? "2024-07-21" : null;
   const lead = cycle === "2012" ? t.lead2012 : cycle === "2016" ? t.lead2016 : cycle === "2020" ? t.lead2020 : t.lead;
   const republican = cycle === "2012" ? t.romney : t.trump;
-  const { rows: polls, error, loading, hasMore, loadMore } = useHistoricalPages(cycle);
   const [pollster, setPollster] = useState("all");
+  const { rows: polls, pollsterCounts, error, loading, hasMore, loadMore } = useHistoricalPages(cycle);
+  const selected = useHistoricalPollster(cycle, pollster);
   const [sides, setSides] = useState({ trump: true, biden: cycle !== "2016", harris: cycle === "2024", clinton: cycle === "2016" });
   const barsRef = useRef<HTMLDivElement>(null);
   const moreRef = useRef<HTMLDivElement>(null);
@@ -184,14 +188,8 @@ export function Historical2024Board({
     });
   }
 
-  const pollsters = useMemo(() => {
-    const counts = new Map<string, number>();
-    for (const poll of polls) counts.set(poll.pollster, (counts.get(poll.pollster) ?? 0) + 1);
-    return [...counts.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
-  }, [polls]);
-
   const resultOnly = pollster === "result";
-  const visible = pollster === "all" || resultOnly ? polls : polls.filter((poll) => poll.pollster === pollster);
+  const visible = pollster === "all" || resultOnly ? polls : selected.rows;
   const shown = (resultOnly ? [] : visible).flatMap((poll) => {
     const democratOn = poll.democrat === "Harris" ? sides.harris : poll.democrat === "Clinton" ? sides.clinton : sides.biden;
     const onlyTrump = sides.trump && !sides.biden && !sides.harris && !sides.clinton;
@@ -232,7 +230,7 @@ export function Historical2024Board({
     snapToEnd();
     snapFrame.current = requestAnimationFrame(snapToEnd);
     return () => cancelAnimationFrame(snapFrame.current);
-  }, [variant, pollster, sides.trump, sides.biden, sides.harris, sides.clinton, polls.length]);
+  }, [variant, pollster, sides.trump, sides.biden, sides.harris, sides.clinton, visible.length]);
 
   useEffect(() => {
     if (variant !== "list" || pollster !== "all") return;
@@ -280,18 +278,17 @@ export function Historical2024Board({
   const resultLead = leadClass(official.trumpPct, official.democratPct);
   const resultNames = { trump: republican, democrat: official.democrat === "Harris" ? t.harris : official.democrat === "Clinton" ? t.clinton : official.democrat === "Obama" ? t.obama : t.biden, resultFilter: t.resultFilter, electors: t.electors };
   const cardNames = { ...t, trump: republican };
-
   return (
     <section className="poll-archive">
       <div className="campaign-panel">
         <div className="poll-chips" role="group" aria-label={t.filterLabel}>
           <button type="button" className={pollster === "all" ? "is-active" : undefined} aria-pressed={pollster === "all"} onClick={() => choosePollster("all")}>{t.filterAll}</button>
           <button type="button" className={pollster === "result" ? "is-result is-active" : "is-result"} aria-pressed={pollster === "result"} onClick={() => choosePollster("result")}>{t.resultFilter}</button>
-          {pollsters.map(([name]) => (
+          {pollsterCounts.map(({ pollster: name }) => (
             <button type="button" key={name} className={pollster === name ? "is-active" : undefined} aria-pressed={pollster === name} onClick={() => choosePollster(name)}>{name}</button>
           ))}
         </div>
-        {visible.length === 0 && !(loading && polls.length === 0) ? <p className="poll-note">{t.noPollster}</p> : (
+        {visible.length === 0 && !(loading && polls.length === 0) && !selected.loading ? <p className="poll-note">{selected.error ? t.filterLoadError : t.noPollster}</p> : (
           <>
             <div className="poll-bar-legend" role="group" aria-label={t.candidateFilter}>
               <button type="button" className={sides.trump ? "is-active is-trump" : undefined} aria-pressed={sides.trump} onClick={() => toggleSide("trump")}><i className="poll-bar__swatch poll-bar__swatch--trump" />{republican}</button>
@@ -300,7 +297,7 @@ export function Historical2024Board({
               <button type="button" className={resultOnly ? "is-active is-result" : undefined} aria-pressed={resultOnly} onClick={() => choosePollster(resultOnly ? "all" : "result")}><i className="poll-bar__swatch poll-bar__swatch--result" />{t.resultFilter}</button>
             </div>
             {shown.length === 0 && !showResult ? <p className="poll-note">{t.noCandidate}</p> : variant === "timeline" ? (
-              <div className="poll-bars" ref={barsRef} role="list" aria-label={lead} aria-busy={loading} onScroll={onBarsScroll}>
+              <div className="poll-bars" ref={barsRef} role="list" aria-label={lead} aria-busy={loading || selected.loading} onScroll={onBarsScroll}>
                 {loadingMore ? <LoadingMore label={t.loadingMore} /> : null}
                 {entries.map((entry) => entry.kind === "news" ? <NewsCard key="2024-07-21-news" language={language} label={t.news} text={t.newsHover} /> : <TimelineCard key={entry.poll.id} entry={entry} language={language} names={cardNames} />)}
                 {showResult ? <TimelineResult language={language} names={resultNames} official={official} trump={sides.trump} democrat={officialOn} lead={resultLead} /> : null}
@@ -310,7 +307,7 @@ export function Historical2024Board({
         )}
       </div>
       {variant === "list" && (visible.length > 0 || (loading && polls.length === 0)) && (shown.length > 0 || showResult) ? (
-        <div className="poll-rows" role="list" aria-label={lead} aria-busy={loading}>
+        <div className="poll-rows" role="list" aria-label={lead} aria-busy={loading || selected.loading}>
           {showResult ? <ListResult language={language} names={resultNames} official={official} trump={sides.trump} democrat={officialOn} lead={resultLead} /> : null}
           {entries.map((entry) => entry.kind === "news" ? <NewsRow key="2024-07-21-news" language={language} label={t.news} text={t.newsHover} /> : <ListCard key={entry.poll.id} entry={entry} language={language} names={cardNames} />)}
           {loadingMore ? <LoadingMoreRow label={t.loadingMore} /> : null}

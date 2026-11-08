@@ -3,7 +3,7 @@ import biden2020 from "../../data/trumpBiden2020.json";
 import biden2024 from "../../data/trumpBiden2024.json";
 import clinton2016 from "../../data/trumpClinton2016.json";
 import harris2024 from "../../data/trumpHarris2024.json";
-import { HISTORICAL_PAGE_SIZE, type HistoricalCursor, type HistoricalCycle, type HistoricalPollRow } from "./historical";
+import { HISTORICAL_PAGE_SIZE, type HistoricalCursor, type HistoricalCycle, type HistoricalPollRow, type HistoricalPollsterCount } from "./historical";
 
 type ArchiveRow = {
   id: string;
@@ -51,6 +51,28 @@ const archives: Record<HistoricalCycle, HistoricalPollRow[]> = {
   ].sort(byNewest),
 };
 
+function countPollsters(rows: HistoricalPollRow[]): HistoricalPollsterCount[] {
+  const counts = new Map<string, number>();
+  for (const row of rows) counts.set(row.pollster, (counts.get(row.pollster) ?? 0) + 1);
+  return [...counts].map(([pollster, count]) => ({ pollster, count }))
+    .sort((a, b) => b.count - a.count || a.pollster.localeCompare(b.pollster));
+}
+
+const pollsterCounts: Record<HistoricalCycle, HistoricalPollsterCount[]> = {
+  2012: countPollsters(archives[2012]),
+  2016: countPollsters(archives[2016]),
+  2020: countPollsters(archives[2020]),
+  2024: countPollsters(archives[2024]),
+};
+
+export function listHistoricalPollsterRows(cycle: HistoricalCycle, pollster: string) {
+  return archives[cycle].filter((row) => row.pollster === pollster);
+}
+
+export function listHistoricalPollsterCounts(cycle: HistoricalCycle) {
+  return pollsterCounts[cycle];
+}
+
 export function listHistoricalPage(cycle: HistoricalCycle, cursor?: HistoricalCursor) {
   const all = archives[cycle];
   let start = 0;
@@ -61,5 +83,5 @@ export function listHistoricalPage(cycle: HistoricalCycle, cursor?: HistoricalCu
   const rows = all.slice(start, start + HISTORICAL_PAGE_SIZE);
   const last = rows.at(-1);
   const nextCursor = rows.length === HISTORICAL_PAGE_SIZE && last ? { recordedOn: last.recordedOn, id: last.id } : null;
-  return { rows, nextCursor };
+  return { rows, nextCursor, pollsterCounts: pollsterCounts[cycle] };
 }

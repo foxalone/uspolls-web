@@ -29,3 +29,5 @@ export type HistoricalPollRow = {
   sampleSize: number | null;
   sourceUrl: string | null;
 };
+
+export type HistoricalPollsterCount = { pollster: string; count: number };

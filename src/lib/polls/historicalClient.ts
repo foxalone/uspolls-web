@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { HistoricalPollRow } from "./historical";
+import type { HistoricalPollRow, HistoricalPollsterCount } from "./historical";
 
 export type HistoricalCycle = "2012" | "2016" | "2020" | "2024";
 
-type Page = { rows: HistoricalPollRow[]; nextCursor: string | null };
-type Entry = { rows: HistoricalPollRow[]; cursor: string | null; hasMore: boolean };
+type Page = { rows: HistoricalPollRow[]; nextCursor: string | null; pollsterCounts: HistoricalPollsterCount[] };
+type Entry = { rows: HistoricalPollRow[]; cursor: string | null; hasMore: boolean; pollsterCounts: HistoricalPollsterCount[] };
 
 const cache = new Map<HistoricalCycle, Entry>();
 const pages = new Map<string, Page>();
@@ -22,20 +22,22 @@ function merge(older: HistoricalPollRow[], newer: HistoricalPollRow[]) {
   return rows;
 }
 
-function loadPage(cycle: HistoricalCycle, cursor: string | null) {
-  const key = `${cycle}:${cursor ?? ""}`;
+function loadPage(cycle: HistoricalCycle, cursor: string | null, pollster?: string) {
+  const key = `${cycle}:${cursor ?? ""}:${pollster ?? ""}`;
   const saved = pages.get(key);
   if (saved) return Promise.resolve(saved);
   const existing = inflight.get(key);
   if (existing) return existing;
-  const params = new URLSearchParams({ cycle });
+  const params = new URLSearchParams({ cycle, v: "2" });
   if (cursor) params.set("cursor", cursor);
+  if (pollster) params.set("pollster", pollster);
   const pending = fetch(`/api/historical-polls?${params.toString()}`).then(async (response) => {
     if (!response.ok) throw new Error("historical polls unavailable");
-    const body = await response.json() as { polls?: HistoricalPollRow[]; nextCursor?: string | null };
+    const body = await response.json() as { polls?: HistoricalPollRow[]; nextCursor?: string | null; pollsterCounts?: HistoricalPollsterCount[] };
     const page = {
       rows: Array.isArray(body.polls) ? body.polls : [],
       nextCursor: typeof body.nextCursor === "string" ? body.nextCursor : null,
+      pollsterCounts: Array.isArray(body.pollsterCounts) ? body.pollsterCounts : [],
     };
     pages.set(key, page);
     return page;
@@ -49,6 +51,7 @@ function loadPage(cycle: HistoricalCycle, cursor: string | null) {
 export function useHistoricalPages(cycle: HistoricalCycle) {
   const cached = cache.get(cycle);
   const [rows, setRows] = useState<HistoricalPollRow[]>(cached?.rows ?? []);
+  const [pollsterCounts, setPollsterCounts] = useState<HistoricalPollsterCount[]>(cached?.pollsterCounts ?? []);
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(!cached);
   const [hasMore, setHasMore] = useState(cached ? cached.hasMore : true);
@@ -72,6 +75,7 @@ export function useHistoricalPages(cycle: HistoricalCycle) {
     cursorRef.current = entry.cursor;
     hasMoreRef.current = entry.hasMore;
     setRows(entry.rows);
+    setPollsterCounts(entry.pollsterCounts);
     setHasMore(entry.hasMore);
   }, [cycle]);
 
@@ -86,6 +90,7 @@ export function useHistoricalPages(cycle: HistoricalCycle) {
     }
     let cancelled = false;
     setRows([]);
+    setPollsterCounts([]);
     setError(false);
     setHasMore(true);
     setLoading(true);
@@ -94,7 +99,7 @@ export function useHistoricalPages(cycle: HistoricalCycle) {
     cursorRef.current = null;
     loadPage(cycle, null).then((page) => {
       if (cancelled) return;
-      write({ rows: page.rows, cursor: page.nextCursor, hasMore: page.nextCursor !== null });
+      write({ rows: page.rows, cursor: page.nextCursor, hasMore: page.nextCursor !== null, pollsterCounts: page.pollsterCounts });
       setLoading(false);
       loadingRef.current = false;
     }).catch(() => {
@@ -126,12 +131,35 @@ export function useHistoricalPages(cycle: HistoricalCycle) {
       }, wait);
     };
     loadPage(cycle, cursor).then((page) => {
-      finish(() => write({ rows: merge(page.rows, rowsRef.current), cursor: page.nextCursor, hasMore: page.nextCursor !== null }));
+      finish(() => write({ rows: merge(page.rows, rowsRef.current), cursor: page.nextCursor, hasMore: page.nextCursor !== null, pollsterCounts: page.pollsterCounts }));
     }).catch(() => {
       finish(() => undefined);
     });
     return true;
   }, [cycle, write]);
 
-  return { rows, error, loading, hasMore, loadMore };
+  return { rows, pollsterCounts, error, loading, hasMore, loadMore };
+}
+
+type PollsterState = { key: string; rows: HistoricalPollRow[]; loading: boolean; error: boolean };
+
+export function useHistoricalPollster(cycle: HistoricalCycle, pollster: string) {
+  const key = `${cycle}:${pollster}`;
+  const active = pollster !== "all" && pollster !== "result";
+  const [state, setState] = useState<PollsterState>({ key: "", rows: [], loading: false, error: false });
+
+  useEffect(() => {
+    if (!active) return;
+    let cancelled = false;
+    setState({ key, rows: [], loading: true, error: false });
+    loadPage(cycle, null, pollster).then((page) => {
+      if (!cancelled) setState({ key, rows: page.rows, loading: false, error: false });
+    }).catch(() => {
+      if (!cancelled) setState({ key, rows: [], loading: false, error: true });
+    });
+    return () => { cancelled = true; };
+  }, [active, cycle, key, pollster]);
+
+  if (!active) return { rows: [], loading: false, error: false };
+  return state.key === key ? state : { rows: [], loading: true, error: false };
 }
