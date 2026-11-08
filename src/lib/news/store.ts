@@ -83,36 +83,50 @@ export async function saveNewsRun(input: {
   if (input.accepted.length > 0 || input.seen.length > 0) await batch.commit();
 }
 
+function textPair(value: { en?: unknown; es?: unknown } | undefined) {
+  return {
+    en: typeof value?.en === "string" ? value.en : "",
+    es: typeof value?.es === "string" ? value.es : "",
+  };
+}
+
+function asCard(id: string, data: Record<string, unknown> & { image?: { url?: unknown; author?: unknown; page?: unknown }; headline?: { en?: unknown; es?: unknown }; teaser?: { en?: unknown; es?: unknown }; body?: { en?: unknown; es?: unknown } }): PublicNewsCard | null {
+  const image = data.image && typeof data.image.url === "string" ? {
+    url: data.image.url,
+    author: typeof data.image.author === "string" ? data.image.author : "",
+    page: typeof data.image.page === "string" ? data.image.page : "",
+  } : null;
+  const card: PublicNewsCard = {
+    id,
+    url: typeof data.url === "string" ? data.url : "",
+    source: typeof data.source === "string" ? data.source : "",
+    publishedAt: typeof data.publishedAt === "string" ? data.publishedAt : "",
+    headline: textPair(data.headline),
+    teaser: textPair(data.teaser),
+    body: textPair(data.body),
+    topic: typeof data.topic === "string" ? data.topic : "",
+    image,
+    sortKey: typeof data.sortKey === "number" ? data.sortKey : 0,
+  };
+  return card.url && card.headline.en ? card : null;
+}
+
+export async function getPresidentialNews(id: string) {
+  if (!/^[a-f0-9]{24}$/.test(id)) return null;
+  const snap = await publishedCollection().doc(id).get();
+  if (!snap.exists) return null;
+  return asCard(snap.id, snap.data() as Parameters<typeof asCard>[1]);
+}
+
 export async function listPresidentialNews(limit: number, before?: number): Promise<NewsPage> {
   let query = publishedCollection().orderBy("sortKey", "desc");
   if (before !== undefined) query = query.where("sortKey", "<", before);
   const snap = await query.limit(limit + 1).get();
   const docs = snap.docs.slice(0, limit);
-  const items: PublicNewsCard[] = docs.map((doc) => {
-    const data = doc.data();
-    const image = data.image && typeof data.image.url === "string" ? {
-      url: data.image.url,
-      author: typeof data.image.author === "string" ? data.image.author : "",
-      page: typeof data.image.page === "string" ? data.image.page : "",
-    } : null;
-    return {
-      id: doc.id,
-      url: typeof data.url === "string" ? data.url : "",
-      source: typeof data.source === "string" ? data.source : "",
-      publishedAt: typeof data.publishedAt === "string" ? data.publishedAt : "",
-      headline: {
-        en: typeof data.headline?.en === "string" ? data.headline.en : "",
-        es: typeof data.headline?.es === "string" ? data.headline.es : "",
-      },
-      teaser: {
-        en: typeof data.teaser?.en === "string" ? data.teaser.en : "",
-        es: typeof data.teaser?.es === "string" ? data.teaser.es : "",
-      },
-      topic: typeof data.topic === "string" ? data.topic : "",
-      image,
-      sortKey: typeof data.sortKey === "number" ? data.sortKey : 0,
-    };
-  }).filter((item) => item.url && item.headline.en);
+  const items = docs.flatMap((doc) => {
+    const card = asCard(doc.id, doc.data());
+    return card ? [card] : [];
+  });
   const next = snap.docs.length > limit ? items[items.length - 1]?.sortKey ?? null : null;
   return { items, next };
 }

@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { useState } from "react";
 import { languageLocale, useLanguage, type Language } from "../lib/language";
 import type { NewsPage, PublicNewsCard } from "../lib/news/types";
@@ -7,7 +8,7 @@ const copy = {
   en: {
     eyebrow: "2028 presidential race",
     title: "News",
-    lede: "Headlines about the race, gathered every three hours in English and Spanish. Each card opens the original story.",
+    lede: "Headlines about the race, gathered every three hours in English and Spanish.",
     empty: "The first headlines appear after the next update.",
     more: "Load 10 more",
     loading: "Loading…",
@@ -17,7 +18,7 @@ const copy = {
   es: {
     eyebrow: "Carrera presidencial de 2028",
     title: "Noticias",
-    lede: "Titulares de la carrera, reunidos cada tres horas en inglés y en español. Cada ficha abre la nota original.",
+    lede: "Titulares de la carrera, reunidos cada tres horas en inglés y en español.",
     empty: "Los primeros titulares aparecen después de la próxima actualización.",
     more: "Cargar 10 más",
     loading: "Cargando…",
@@ -27,7 +28,7 @@ const copy = {
   ru: {
     eyebrow: "Президентская гонка 2028",
     title: "Новости",
-    lede: "Заголовки о гонке собираются каждые три часа на английском и испанском. Карточка открывает исходный материал.",
+    lede: "Заголовки о гонке собираются каждые три часа на английском и испанском.",
     empty: "Первые заголовки появятся после следующего обновления.",
     more: "Ещё 10",
     loading: "Загружаем…",
@@ -89,7 +90,7 @@ export function PresidentialNews({ initial }: { initial: NewsPage }) {
       </header>
       {items.length === 0 ? <p className={styles.empty}>{t.empty}</p> : (
         <div className={styles.masonry}>
-          {items.map((item, index) => <NewsCube item={item} index={index} language={language} text={text} photoLabel={t.photo} ageLabel={age(item.publishedAt, language)} key={item.id} />)}
+          {items.map((item, index) => <NewsCube item={item} index={index} text={text} photoLabel={t.photo} ageLabel={age(item.publishedAt, language)} key={item.id} />)}
         </div>
       )}
       {cursor !== null ? (
@@ -102,17 +103,30 @@ export function PresidentialNews({ initial }: { initial: NewsPage }) {
   );
 }
 
-function NewsCube({ item, index, language, text, photoLabel, ageLabel }: {
+export function RelatedNews({ items }: { items: PublicNewsCard[] }) {
+  const { language } = useLanguage();
+  const text = words(language);
+  const t = copy[language];
+  if (items.length === 0) return null;
+  return (
+    <div className={styles.related}>
+      {items.map((item, index) => (
+        <NewsCube item={item} index={index} text={text} photoLabel={t.photo} ageLabel={age(item.publishedAt, language)} key={item.id} />
+      ))}
+    </div>
+  );
+}
+
+function NewsCube({ item, index, text, photoLabel, ageLabel }: {
   item: PublicNewsCard;
   index: number;
-  language: Language;
   text: "en" | "es";
   photoLabel: string;
   ageLabel: string;
 }) {
   const tone = index % 4;
   return (
-    <a className={styles.card} data-tone={tone} href={item.url} target="_blank" rel="noreferrer">
+    <Link className={styles.card} data-tone={tone} href={`/news/${item.id}`}>
       {item.image ? (
         <span className={styles.photo}>
           <img src={item.image.url} alt="" />
@@ -126,7 +140,6 @@ function NewsCube({ item, index, language, text, photoLabel, ageLabel }: {
       {item.topic ? <span className={styles.topic}>{item.topic}</span> : null}
       <strong className={styles.headline} lang={text}>{item.headline[text]}</strong>
       <span className={styles.teaser} lang={text}>{item.teaser[text]}</span>
-      <span className="sr-only">{language === "es" ? "Fuente original" : language === "ru" ? "Исходный материал" : "Original source"}</span>
-    </a>
+    </Link>
   );
 }

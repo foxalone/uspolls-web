@@ -42,6 +42,7 @@ export type PublicNewsCard = {
   publishedAt: string;
   headline: NewsText;
   teaser: NewsText;
+  body: NewsText;
   topic: string;
   image: NewsImage | null;
   sortKey: number;
