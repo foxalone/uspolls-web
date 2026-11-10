@@ -1,9 +1,10 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { acceptDecisions, parseDecisions, prepareBatch } from "./decide";
+import { mergeNews } from "./feed";
 import { parseRss } from "./rss";
 import { titleKey } from "./text";
-import type { RawNewsItem } from "./types";
+import type { PublicNewsCard, RawNewsItem } from "./types";
 
 const RSS = `<?xml version="1.0"?>
 <rss><channel>
@@ -67,6 +68,37 @@ test("the model can reject a paraphrase and keep a new fact", () => {
   assert.deepEqual(judged.accepted.map((row) => row.item.id), ["n1"]);
   assert.deepEqual(judged.duplicated, ["n2", "n3"]);
   assert.deepEqual(judged.accepted[0].people, [{ name: "Donald Trump", nameEn: "Donald Trump" }]);
+});
+
+function card(id: string, sortKey: number): PublicNewsCard {
+  return {
+    id,
+    url: `https://example.com/${id}`,
+    source: "Reuters",
+    publishedAt: "2026-11-08T15:00:00.000Z",
+    headline: { en: id, es: id },
+    teaser: { en: id, es: id },
+    body: { en: "", es: "" },
+    topic: "",
+    image: null,
+    sortKey,
+  };
+}
+
+test("fresh cards stay ahead of cards already on the page", () => {
+  const merged = mergeNews(
+    [card("kept", 20), card("old", 10)],
+    [card("fresh", 30), card("kept", 20)],
+  );
+  assert.deepEqual(merged.map((row) => row.id), ["fresh", "kept", "old"]);
+});
+
+test("older pages stay behind the headlines already shown", () => {
+  const merged = mergeNews(
+    [card("new", 30), card("mid", 20)],
+    [card("mid", 20), card("old", 10)],
+  );
+  assert.deepEqual(merged.map((row) => row.id), ["new", "mid", "old"]);
 });
 
 test("a broken model reply publishes nothing", () => {

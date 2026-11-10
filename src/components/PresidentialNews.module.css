@@ -18,16 +18,32 @@
 }
 
 .masonry {
-  columns: 3;
-  column-gap: 0.8rem;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.8rem;
+  align-items: start;
+}
+
+.masonry[data-columns="2"] {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.masonry[data-columns="1"] {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  min-width: 0;
 }
 
 .card {
-  display: inline-flex;
+  display: flex;
   flex-direction: column;
   width: 100%;
-  margin: 0 0 0.8rem;
-  break-inside: avoid;
+  margin: 0;
   overflow: hidden;
   border: 1px solid var(--campaign-stroke);
   border-radius: 1.15rem;
@@ -154,21 +170,36 @@
   line-height: 1.35;
 }
 
-.more {
-  justify-self: center;
-  border: 0;
-  border-radius: 999px;
-  background: var(--campaign-accent);
-  color: var(--campaign-accent-ink);
-  padding: 0.7rem 1.1rem;
-  font: inherit;
-  font-weight: 800;
-  cursor: pointer;
+.sentinel {
+  height: 1px;
 }
 
-.more:disabled {
-  cursor: progress;
-  opacity: 0.7;
+.skeleton {
+  height: 11rem;
+  border: 1px solid var(--campaign-stroke);
+  border-radius: 1.15rem;
+  background: linear-gradient(
+    100deg,
+    var(--campaign-panel) 30%,
+    color-mix(in srgb, var(--campaign-ink) 9%, var(--campaign-panel)) 50%,
+    var(--campaign-panel) 70%
+  );
+  background-size: 220% 100%;
+  animation: newsShimmer 1.15s ease-in-out infinite;
+}
+
+@keyframes newsShimmer {
+  from { background-position: 100% 0; }
+  to { background-position: -100% 0; }
+}
+
+.status {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: 0;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
 }
 
 .empty,
@@ -278,11 +309,13 @@
   margin: 0;
 }
 
-@media (max-width: 980px) {
-  .masonry {
-    columns: 2;
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
   }
+}
 
+@media (max-width: 980px) {
   .related {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -290,7 +323,7 @@
 
 @media (max-width: 680px) {
   .masonry {
-    columns: 1;
+    grid-template-columns: 1fr;
   }
 
   .related {

@@ -118,8 +118,9 @@ export async function getPresidentialNews(id: string) {
   return asCard(snap.id, snap.data() as Parameters<typeof asCard>[1]);
 }
 
-export async function listPresidentialNews(limit: number, before?: number): Promise<NewsPage> {
+export async function listPresidentialNews(limit: number, before?: number, after?: number): Promise<NewsPage> {
   let query = publishedCollection().orderBy("sortKey", "desc");
+  if (after !== undefined) query = query.where("sortKey", ">", after);
   if (before !== undefined) query = query.where("sortKey", "<", before);
   const snap = await query.limit(limit + 1).get();
   const docs = snap.docs.slice(0, limit);
