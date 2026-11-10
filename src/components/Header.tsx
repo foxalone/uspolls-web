@@ -2,7 +2,14 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { CHROME, useLanguage, type Language } from "../lib/language";
 import { NAV } from "../lib/nav";
+import { HoldMenu } from "./HoldMenu";
 import { ThemeSwitcher } from "./ThemeSwitcher";
+
+const LANGUAGE_NAME: Record<Language, string> = {
+  en: "English",
+  es: "Español",
+  ru: "Русский",
+};
 
 const PUBLIC_LANGUAGES: Language[] = ["en", "es"];
 
@@ -37,7 +44,7 @@ export function Header() {
         </nav>
 
         <div className="campaign-header__tools">
-          <div aria-label={ui.language} className="language-switch" role="group">
+          <div aria-label={ui.language} className="language-switch language-switch--full" role="group">
             {languages.map((code) => (
               <button
                 aria-pressed={language === code}
@@ -50,6 +57,17 @@ export function Header() {
               </button>
             ))}
           </div>
+          <HoldMenu
+            className="hold-menu--language"
+            current={language}
+            label={ui.language}
+            onSelect={setLanguage}
+            options={languages.map((code) => ({
+              id: code,
+              label: LANGUAGE_NAME[code],
+              content: code.toUpperCase(),
+            }))}
+          />
           <ThemeSwitcher />
         </div>
       </div>

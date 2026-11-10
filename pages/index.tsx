@@ -3,7 +3,8 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { HomeElectionMap } from "../src/components/HomeElectionMap";
 import { PRESIDENTIAL_ELECTION_DATE } from "../src/data/presidential2028";
-import { languageLocale, useLanguage, type Language } from "../src/lib/language";
+import { formatCountdown } from "../src/lib/electionCalendar";
+import { useLanguage, type Language } from "../src/lib/language";
 
 const copy = {
   en: {
@@ -13,7 +14,7 @@ const copy = {
     lead: "One place to follow the race as it takes shape — verified polls, the path through the primaries, and the Electoral College.",
     dateLabel: "Election Day",
     date: "November 7, 2028",
-    days: "days to go",
+    units: { days: "Days", hours: "Hours", minutes: "Min", seconds: "Sec" },
     dayOf: "Election Day is here",
     pollLink: "Explore polls",
     timelineLink: "See the timeline",
@@ -41,7 +42,7 @@ const copy = {
     lead: "Un solo lugar para seguir la carrera: encuestas verificadas, el camino de las primarias y el Colegio Electoral.",
     dateLabel: "Día de las elecciones",
     date: "7 de noviembre de 2028",
-    days: "días restantes",
+    units: { days: "Días", hours: "Horas", minutes: "Min", seconds: "Seg" },
     dayOf: "Hoy son las elecciones",
     pollLink: "Ver encuestas",
     timelineLink: "Ver calendario",
@@ -69,7 +70,7 @@ const copy = {
     lead: "Одно место, чтобы следить за гонкой: проверенные опросы, путь через праймериз и коллегия выборщиков.",
     dateLabel: "День выборов",
     date: "7 ноября 2028",
-    days: "дней осталось",
+    units: { days: "Дни", hours: "Часы", minutes: "Мин", seconds: "Сек" },
     dayOf: "Сегодня день выборов",
     pollLink: "Смотреть опросы",
     timelineLink: "Открыть календарь",
@@ -92,26 +93,48 @@ const copy = {
   },
 } as const;
 
-function daysLeftLabel(language: Language, count: number) {
-  if (language !== "ru") return copy[language].days;
-  const n10 = count % 10;
-  const n100 = count % 100;
-  if (n10 === 1 && n100 !== 11) return "день остался";
-  if (n10 >= 2 && n10 <= 4 && (n100 < 12 || n100 > 14)) return "дня осталось";
-  return "дней осталось";
+const COUNTDOWN_UNITS = ["days", "hours", "minutes", "seconds"] as const;
+
+function ElectionCountdown({ language }: { language: Language }) {
+  const t = copy[language];
+  const [now, setNow] = useState<number | null>(null);
+
+  useEffect(() => {
+    const update = () => setNow(Date.now());
+    update();
+    const timer = window.setInterval(update, 1000);
+    return () => window.clearInterval(timer);
+  }, []);
+
+  const parts = now === null ? null : formatCountdown(new Date(PRESIDENTIAL_ELECTION_DATE), now);
+  if (parts?.isComplete) return <p>{t.dayOf}</p>;
+
+  const spoken = parts
+    ? `${Number(parts.days)} ${t.units.days}, ${Number(parts.hours)} ${t.units.hours}, ${Number(parts.minutes)} ${t.units.minutes}, ${Number(parts.seconds)} ${t.units.seconds}`
+    : t.dateLabel;
+
+  return (
+    <div className="election-countdown" role="timer" aria-label={spoken}>
+      {COUNTDOWN_UNITS.flatMap((unit, index) => {
+        const cell = (
+          <div className="election-countdown__unit" key={unit}>
+            <b>{parts ? parts[unit] : "—"}</b>
+            <span>{t.units[unit]}</span>
+          </div>
+        );
+        if (index === 0) return [cell];
+        return [
+          <span className="election-countdown__sep" aria-hidden="true" key={`${unit}-sep`}>:</span>,
+          cell,
+        ];
+      })}
+    </div>
+  );
 }
 
 export default function IndexPage() {
   const { language } = useLanguage();
   const t = copy[language];
-  const [daysLeft, setDaysLeft] = useState<number | null>(null);
-
-  useEffect(() => {
-    const update = () => setDaysLeft(Math.max(0, Math.ceil((new Date(PRESIDENTIAL_ELECTION_DATE).getTime() - Date.now()) / 86_400_000)));
-    update();
-    const timer = window.setInterval(update, 60_000);
-    return () => window.clearInterval(timer);
-  }, []);
 
   return (
     <>
@@ -136,7 +159,7 @@ export default function IndexPage() {
             <span className="election-date-card__label">{t.dateLabel}</span>
             <strong>{t.date}</strong>
             <div className="election-date-card__rule" />
-            <p aria-live="polite">{daysLeft === null ? "—" : daysLeft === 0 ? t.dayOf : <><b>{daysLeft.toLocaleString(languageLocale(language))}</b> {daysLeftLabel(language, daysLeft)}</>}</p>
+            <ElectionCountdown language={language} />
           </div>
         </section>
 

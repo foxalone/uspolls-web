@@ -1,4 +1,5 @@
 import { useTheme } from "./ThemeProvider";
+import { HoldMenu } from "./HoldMenu";
 import { CHROME, useLanguage } from "../lib/language";
 import type { ThemePreference } from "../lib/theme";
 
@@ -40,24 +41,39 @@ export function ThemeSwitcher() {
   const ui = CHROME[language];
   const labels = { light: ui.light, dark: ui.dark, auto: ui.auto };
 
+  const choices = OPTIONS.map((option) => ({
+    id: option.id,
+    label: labels[option.id],
+    content: <ThemeIcon name={option.id} />,
+  }));
+
   return (
-    <div aria-label={ui.theme} className="theme-switcher" role="radiogroup">
-      {OPTIONS.map((option) => {
-        const selected = preference === option.id;
-        return (
-          <button
-            aria-checked={selected}
-            aria-label={labels[option.id]}
-            className={`theme-switcher__btn${selected ? " is-active" : ""}`}
-            key={option.id}
-            onClick={() => setPreference(option.id)}
-            role="radio"
-            type="button"
-          >
-            <ThemeIcon name={option.id} />
-          </button>
-        );
-      })}
-    </div>
+    <>
+      <div aria-label={ui.theme} className="theme-switcher theme-switcher--full" role="radiogroup">
+        {OPTIONS.map((option) => {
+          const selected = preference === option.id;
+          return (
+            <button
+              aria-checked={selected}
+              aria-label={labels[option.id]}
+              className={`theme-switcher__btn${selected ? " is-active" : ""}`}
+              key={option.id}
+              onClick={() => setPreference(option.id)}
+              role="radio"
+              type="button"
+            >
+              <ThemeIcon name={option.id} />
+            </button>
+          );
+        })}
+      </div>
+      <HoldMenu
+        className="hold-menu--theme"
+        current={preference}
+        label={ui.theme}
+        onSelect={setPreference}
+        options={choices}
+      />
+    </>
   );
 }

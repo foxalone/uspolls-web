@@ -111,6 +111,75 @@
   color: var(--campaign-accent-ink);
 }
 
+.hold-menu {
+  display: none;
+  position: relative;
+}
+
+.hold-menu__trigger,
+.hold-menu__option {
+  display: grid;
+  place-items: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--switcher-icon);
+  font-size: 0.76rem;
+  font-weight: 800;
+  cursor: pointer;
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
+.hold-menu__trigger {
+  touch-action: manipulation;
+}
+
+.hold-menu__trigger.is-holding {
+  transform: scale(0.94);
+}
+
+.hold-menu--language .hold-menu__trigger {
+  background: var(--campaign-accent);
+  color: var(--campaign-accent-ink);
+}
+
+.hold-menu--theme .hold-menu__trigger {
+  border: 1px solid var(--header-border);
+  border-radius: 0.75rem;
+  background: var(--switcher-bg);
+  color: var(--switcher-icon);
+  box-shadow: var(--switcher-shadow);
+}
+
+.hold-menu--theme .hold-menu__trigger svg,
+.hold-menu--theme .hold-menu__option svg {
+  width: 1.15rem;
+  height: 1.15rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.hold-menu__panel {
+  position: absolute;
+  top: calc(100% + 0.45rem);
+  right: 0;
+  z-index: 5;
+  display: flex;
+  gap: 0.12rem;
+  padding: 0.2rem;
+  border: 1px solid var(--header-border);
+  border-radius: 999px;
+  background: var(--switcher-bg);
+  box-shadow: var(--switcher-shadow);
+}
+
 .campaign-stack {
   display: grid;
   gap: 1.15rem;
@@ -245,10 +314,40 @@
   font-weight: 650;
 }
 
-.election-date-card p b {
+.election-countdown {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.15rem;
+}
+
+.election-countdown__unit {
+  display: grid;
+  flex: 1 1 0;
+  justify-items: center;
+  gap: 0.4rem;
+  min-width: 0;
+}
+
+.election-countdown__unit b,
+.election-countdown__sep {
   color: var(--campaign-accent);
-  font-size: 1.8rem;
+  font-size: clamp(1.35rem, 2.2vw, 1.85rem);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
   line-height: 1;
+}
+
+.election-countdown__sep {
+  opacity: 0.55;
+}
+
+.election-countdown__unit span {
+  color: var(--campaign-subtle);
+  font-size: 0.66rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .campaign-facts {
@@ -1160,14 +1259,21 @@
 }
 
 .us-map__state.is-trump,
-.us-map__state.is-romney {
+.us-map__state.is-romney,
+.us-map__state.is-bushSr,
+.us-map__state.is-bushJr,
+.us-map__state.is-dole,
+.us-map__state.is-mccain {
   fill: #e23b32;
 }
 
 .us-map__state.is-harris,
 .us-map__state.is-biden,
 .us-map__state.is-clinton,
-.us-map__state.is-obama {
+.us-map__state.is-obama,
+.us-map__state.is-dukakis,
+.us-map__state.is-gore,
+.us-map__state.is-kerry {
   fill: #1d4f9c;
 }
 
@@ -1215,14 +1321,21 @@
 }
 
 .us-map-legend i.is-trump,
-.us-map-legend i.is-romney {
+.us-map-legend i.is-romney,
+.us-map-legend i.is-bushSr,
+.us-map-legend i.is-bushJr,
+.us-map-legend i.is-dole,
+.us-map-legend i.is-mccain {
   background: #e23b32;
 }
 
 .us-map-legend i.is-harris,
 .us-map-legend i.is-biden,
 .us-map-legend i.is-clinton,
-.us-map-legend i.is-obama {
+.us-map-legend i.is-obama,
+.us-map-legend i.is-dukakis,
+.us-map-legend i.is-gore,
+.us-map-legend i.is-kerry {
   background: #1d4f9c;
 }
 
@@ -1590,35 +1703,31 @@
   }
 }
 
-@media (max-width: 480px) {
-  .campaign-header__inner {
-    grid-template-columns: minmax(0, 1fr);
+@media (max-width: 720px) {
+  .language-switch--full,
+  .theme-switcher--full {
+    display: none;
   }
 
-  .campaign-header .brand {
-    grid-row: 1;
+  .hold-menu {
+    display: block;
+  }
+
+  .campaign-header__inner {
+    grid-template-columns: minmax(0, 1fr) auto;
   }
 
   .campaign-header__tools {
-    grid-row: 2;
-    grid-column: 1;
-    width: 100%;
-    justify-content: space-between;
+    grid-row: 1;
+    grid-column: 2;
+    width: auto;
+    justify-content: flex-end;
+    gap: 0.45rem;
   }
 
   .campaign-nav {
-    grid-row: 3;
-    grid-column: 1;
-  }
-
-  .language-switch button {
-    min-width: 2.75rem;
-    min-height: 2.75rem;
-  }
-
-  .campaign-header__tools .theme-switcher__btn {
-    width: 2.75rem;
-    height: 2.75rem;
+    grid-row: 2;
+    grid-column: 1 / -1;
   }
 }
 
