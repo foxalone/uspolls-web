@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Bolt } from "./Bolt";
 import { SITE_NAME } from "../lib/site";
 import {
   clearDeferredInstall,
@@ -90,7 +91,7 @@ export function InstallPrompt() {
   return (
     <aside className="pwa-install" role="dialog" aria-label={`Install ${SITE_NAME}`}>
       <span className="pwa-install__mark" aria-hidden="true">
-        VP
+        <Bolt />
       </span>
       <div className="pwa-install__copy">
         <strong>Install {SITE_NAME}</strong>

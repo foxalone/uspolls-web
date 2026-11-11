@@ -45,6 +45,55 @@
   letter-spacing: 0.02em;
 }
 
+.brand__pulse {
+  position: relative;
+  display: inline-block;
+}
+
+.brand__strike {
+  position: absolute;
+  left: 58%;
+  bottom: 0.35em;
+  width: 1.2rem;
+  height: 1.85rem;
+  color: #fff8ea;
+  pointer-events: none;
+  opacity: 0;
+  transform-origin: 20% 100%;
+  filter: drop-shadow(0 0 1px #e55850) drop-shadow(0 0 8px #f6be73);
+  animation: brand-strike 4.6s ease-in-out infinite;
+}
+
+@keyframes brand-strike {
+  0%, 68% {
+    opacity: 0;
+    transform: translateY(12px) scale(0.35) rotate(-16deg);
+  }
+  74% {
+    opacity: 1;
+    transform: translate(6px, -18px) scale(1) rotate(-16deg);
+  }
+  78% {
+    opacity: 0.12;
+    transform: translate(8px, -22px) scale(1.12) rotate(-16deg);
+  }
+  84% {
+    opacity: 1;
+    transform: translate(10px, -24px) scale(1) rotate(-16deg);
+  }
+  93%, 100% {
+    opacity: 0;
+    transform: translate(12px, -30px) scale(0.55) rotate(-16deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .brand__strike {
+    animation: none;
+    opacity: 0;
+  }
+}
+
 .campaign-header .brand__copy em {
   font-size: 0.69rem;
 }
