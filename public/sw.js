@@ -1,10 +1,11 @@
-const CACHE = "votepulse-presidential-v3";
+const CACHE = "votepulse-presidential-v4";
 const PRECACHE = [
   "/",
   "/polls",
   "/calendar",
   "/news",
   "/favicon.svg",
+  "/icons/favicon-32.png",
   "/manifest.webmanifest",
   "/icons/icon-192.png",
   "/icons/icon-512.png",
