@@ -22,7 +22,7 @@ For a published item write:
 For an unpublished item, set publish to false and leave headline, teaser, and people empty.`;
 
 export function newsModel() {
-  return process.env.OPENAI_NEWS_MODEL?.trim() || "gpt-5-nano";
+  return process.env.OPENAI_NEWS_MODEL?.trim() || "gpt-5.6-luna";
 }
 
 export function buildPrompt(items: RawNewsItem[], recent: { id: string; headline: string }[]) {
