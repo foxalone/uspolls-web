@@ -45,6 +45,7 @@ export type PublicNewsCard = {
   body: NewsText;
   topic: string;
   image: NewsImage | null;
+  video?: { url: string } | null;
   sortKey: number;
 };
 

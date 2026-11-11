@@ -83,6 +83,12 @@ export async function saveNewsRun(input: {
   if (input.accepted.length > 0 || input.seen.length > 0) await batch.commit();
 }
 
+function videoUrlOf(value: unknown) {
+  if (!value || typeof value !== "object") return null;
+  const url = (value as { url?: unknown }).url;
+  return typeof url === "string" && url.startsWith("https://") ? url : null;
+}
+
 function textPair(value: { en?: unknown; es?: unknown } | undefined) {
   return {
     en: typeof value?.en === "string" ? value.en : "",
@@ -96,6 +102,7 @@ function asCard(id: string, data: Record<string, unknown> & { image?: { url?: un
     author: typeof data.image.author === "string" ? data.image.author : "",
     page: typeof data.image.page === "string" ? data.image.page : "",
   } : null;
+  const videoUrl = videoUrlOf(data.video);
   const card: PublicNewsCard = {
     id,
     url: typeof data.url === "string" ? data.url : "",
@@ -106,6 +113,7 @@ function asCard(id: string, data: Record<string, unknown> & { image?: { url?: un
     body: textPair(data.body),
     topic: typeof data.topic === "string" ? data.topic : "",
     image,
+    video: videoUrl ? { url: videoUrl } : null,
     sortKey: typeof data.sortKey === "number" ? data.sortKey : 0,
   };
   return card.url && card.headline.en ? card : null;

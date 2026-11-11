@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { CHROME, useLanguage, type Language } from "../lib/language";
@@ -12,6 +13,7 @@ const LANGUAGE_NAME: Record<Language, string> = {
   ru: "Русский",
 };
 
+const PULSE_BEAT = ["0s", "0.05s", "0.1s", "0.15s", "0.3s", "0.35s", "0.4s", "0.45s", "0.5s"];
 const PUBLIC_LANGUAGES: Language[] = ["en", "es"];
 
 export function Header() {
@@ -26,8 +28,16 @@ export function Header() {
         <Link className="brand" href="/" aria-label={ui.home}>
           <span className="brand__mark" aria-hidden="true"><Bolt /></span>
           <span className="brand__copy">
-            <strong>
-              Vote<span className="brand__pulse">Pulse<Bolt className="brand__strike" /></span>
+            <strong className="brand__name">
+              {"VotePulse".split("").map((letter, index) => (
+                <span
+                  className="brand__letter"
+                  key={`${letter}-${index}`}
+                  style={{ "--strike-delay": PULSE_BEAT[index] } as CSSProperties}
+                >
+                  {letter}
+                </span>
+              ))}
             </strong>
             <em>{ui.brand}</em>
           </span>

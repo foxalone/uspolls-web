@@ -264,17 +264,23 @@ export function RelatedNews({ items }: { items: PublicNewsCard[] }) {
   );
 }
 
-function NewsCube({ item, index, text, photoLabel, ageLabel }: {
+export function NewsCube({ item, index, text, photoLabel, ageLabel, prefetch = true }: {
   item: PublicNewsCard;
   index: number;
   text: "en" | "es";
   photoLabel: string;
   ageLabel: string;
+  prefetch?: boolean;
 }) {
   const tone = index % 4;
   return (
-    <Link className={styles.card} data-tone={tone} href={`/news/${item.id}`}>
-      {item.image ? (
+    <Link className={styles.card} data-tone={tone} href={`/news/${item.id}`} prefetch={prefetch}>
+      {item.video?.url ? (
+        <span className={styles.photo}>
+          {item.image ? <img src={item.image.url} alt="" loading={index < 3 ? "eager" : "lazy"} decoding="async" /> : null}
+          <span className={styles.credit}>Video</span>
+        </span>
+      ) : item.image ? (
         <span className={styles.photo}>
           <img src={item.image.url} alt="" loading={index < 3 ? "eager" : "lazy"} decoding="async" />
           <span className={styles.credit}>{item.image.author ? `${photoLabel}: ${item.image.author}` : "Wikimedia Commons"}</span>

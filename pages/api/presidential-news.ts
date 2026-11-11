@@ -3,6 +3,13 @@ import { listPresidentialNews } from "../../src/lib/news/store";
 
 const PAGE_SIZE = 10;
 
+function readLimit(value: string | string[] | undefined) {
+  if (typeof value !== "string" || value === "") return PAGE_SIZE;
+  const parsed = Number(value);
+  if (!Number.isInteger(parsed) || parsed < 1) return PAGE_SIZE;
+  return Math.min(parsed, PAGE_SIZE);
+}
+
 function readCursor(value: string | string[] | undefined) {
   if (typeof value !== "string" || value === "") return undefined;
   const parsed = Number(value);
@@ -19,7 +26,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (before === null || after === null) return res.status(400).json({ error: "BAD_CURSOR" });
   if (before !== undefined && after !== undefined && after >= before) return res.status(400).json({ error: "BAD_CURSOR" });
   try {
-    const page = await listPresidentialNews(PAGE_SIZE, before, after);
+    const page = await listPresidentialNews(readLimit(req.query.limit), before, after);
     res.setHeader("Cache-Control", "public, max-age=60, s-maxage=120, stale-while-revalidate=300");
     return res.status(200).json(page);
   } catch {
