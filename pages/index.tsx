@@ -1,9 +1,9 @@
-import Head from "next/head";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { HomeElectionMap } from "../src/components/HomeElectionMap";
 import { PRESIDENTIAL_ELECTION_DATE } from "../src/data/presidential2028";
 import { formatCountdown } from "../src/lib/electionCalendar";
+import { Seo } from "../src/components/Seo";
 import { useLanguage, type Language } from "../src/lib/language";
 
 const copy = {
@@ -138,12 +138,7 @@ export default function IndexPage() {
 
   return (
     <>
-      <Head>
-        <title>{t.title} | US Polls 2028</title>
-        <meta name="description" content={t.description} />
-        <meta property="og:title" content={t.title} />
-        <meta property="og:description" content={t.description} />
-      </Head>
+      <Seo title={t.title} description={t.description} path="/" />
       <div className="campaign-stack">
         <section className="campaign-hero" aria-labelledby="campaign-title">
           <div className="campaign-hero__content">

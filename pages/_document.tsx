@@ -4,12 +4,13 @@ export default function Document() {
   return (
     <Html dir="ltr" lang="en">
       <Head>
+        <meta name="google-site-verification" content="eWfwE74L1pdctTBNQKdVTqeqZDiKzcK9uzSEhsuQvok" />
         <meta name="msvalidate.01" content="6C4039ADE8CC2BF28AD52F475540E351" />
         <meta name="theme-color" content="#041024" />
         <meta name="mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-        <meta name="apple-mobile-web-app-title" content="US Polls" />
+        <meta name="apple-mobile-web-app-title" content="VotePulse" />
         <link rel="manifest" href="/manifest.webmanifest" />
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <link rel="apple-touch-icon" href="/icons/apple-touch-icon.png" />

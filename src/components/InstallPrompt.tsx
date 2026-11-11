@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { SITE_NAME } from "../lib/site";
 import {
   clearDeferredInstall,
   dismissPwaPrompt,
@@ -87,18 +88,18 @@ export function InstallPrompt() {
   };
 
   return (
-    <aside className="pwa-install" role="dialog" aria-label="Install US Polls">
+    <aside className="pwa-install" role="dialog" aria-label={`Install ${SITE_NAME}`}>
       <span className="pwa-install__mark" aria-hidden="true">
-        US
+        VP
       </span>
       <div className="pwa-install__copy">
-        <strong>Install US Polls</strong>
+        <strong>Install {SITE_NAME}</strong>
         {mode === "ios" ? (
           <p>
             Tap <b>Share</b>, then <b>Add to Home Screen</b>.
           </p>
         ) : (
-          <p>Add the midterm monitor to your phone.</p>
+          <p>Add {SITE_NAME} to your phone.</p>
         )}
       </div>
       {mode === "native" ? (

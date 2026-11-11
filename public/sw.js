@@ -1,4 +1,4 @@
-const CACHE = "uspolls-presidential-v2";
+const CACHE = "votepulse-presidential-v3";
 const PRECACHE = [
   "/",
   "/polls",

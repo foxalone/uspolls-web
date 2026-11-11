@@ -1,6 +1,6 @@
 import type { GetServerSideProps } from "next";
-import Head from "next/head";
 import Link from "next/link";
+import { Seo } from "../../src/components/Seo";
 import { languageLocale, useLanguage, type Language } from "../../src/lib/language";
 import { RelatedNews } from "../../src/components/PresidentialNews";
 import type { PublicNewsCard } from "../../src/lib/news/types";
@@ -32,19 +32,20 @@ export default function NewsItemPage({ item, more }: { item: PublicNewsCard | nu
   const text = words(language);
   if (!item) {
     return (
-      <article className={styles.article}>
-        <Link className={styles.back} href="/news">{t.back}</Link>
-        <p className={styles.empty}>{t.missing}</p>
-      </article>
+      <>
+        <Seo title={t.missing} description={t.missing} path="/news" noindex />
+        <article className={styles.article}>
+          <Link className={styles.back} href="/news">{t.back}</Link>
+          <p className={styles.empty}>{t.missing}</p>
+        </article>
+      </>
     );
   }
-  const headline = item.headline[text];
+  const headline = item.headline[text] || item.headline.en;
+  const teaser = item.teaser[text] || item.teaser.en;
   return (
     <>
-      <Head>
-        <title>{`${headline} — US Polls`}</title>
-        <meta name="description" content={item.teaser[text]} />
-      </Head>
+      <Seo title={headline} description={teaser} path={`/news/${item.id}`} type="article" />
       <article className={styles.article}>
         <Link className={styles.back} href="/news">{t.back}</Link>
         <div className={styles.story}>

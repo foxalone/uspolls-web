@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { CHROME, useLanguage, type Language } from "../lib/language";
+import { SITE_NAME } from "../lib/site";
 import { NAV } from "../lib/nav";
 import { HoldMenu } from "./HoldMenu";
 import { ThemeSwitcher } from "./ThemeSwitcher";
@@ -22,10 +23,10 @@ export function Header() {
   return (
     <header className="site-header campaign-header">
       <div className="campaign-header__inner">
-        <Link className="brand" href="/" aria-label="US Polls home">
-          <span className="brand__mark" aria-hidden="true">US</span>
+        <Link className="brand" href="/" aria-label={ui.home}>
+          <span className="brand__mark" aria-hidden="true">VP</span>
           <span className="brand__copy">
-            <strong>US Polls</strong>
+            <strong>{SITE_NAME}</strong>
             <em>{ui.brand}</em>
           </span>
         </Link>

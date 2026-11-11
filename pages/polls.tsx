@@ -1,8 +1,8 @@
-import Head from "next/head";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { Historical2024Board } from "../src/components/Historical2024Board";
 import { PRESIDENTIAL_POLLS } from "../src/data/presidential2028";
+import { Seo } from "../src/components/Seo";
 import { languageLocale, useLanguage } from "../src/lib/language";
 
 const copy = {
@@ -170,7 +170,7 @@ export default function PollsPage() {
 
   return (
     <>
-      <Head><title>{t.title} | US Polls 2028</title><meta name="description" content={t.description} /></Head>
+      <Seo title={t.title} description={t.description} path="/polls" />
       <div className="campaign-stack">
         <section className="campaign-page-intro">
           <p className="campaign-kicker"><span className="campaign-kicker__dot" />{tab === "2028" ? t.eyebrow : t.previous}</p>

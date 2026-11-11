@@ -1,9 +1,11 @@
+import { SITE_NAME, SITE_URL } from "../lib/site";
+
 export const PRESIDENTIAL_ELECTION_DATE = "2028-11-07T00:00:00-05:00";
 
 export const PRESIDENTIAL_SITE = {
-  name: "US Polls",
+  name: SITE_NAME,
   year: 2028,
-  url: "https://uspolls-web.vercel.app",
+  url: SITE_URL,
 };
 
 export type TranslatedText = { en: string; es: string; ru: string };

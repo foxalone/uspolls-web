@@ -27,6 +27,10 @@ const nextConfig = {
   async rewrites() {
     return [
       {
+        source: "/sitemap.xml",
+        destination: "/api/sitemap",
+      },
+      {
         source: "/__/auth/:path*",
         destination: "https://uspolls-web.firebaseapp.com/__/auth/:path*",
       },

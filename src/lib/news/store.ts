@@ -111,6 +111,18 @@ function asCard(id: string, data: Record<string, unknown> & { image?: { url?: un
   return card.url && card.headline.en ? card : null;
 }
 
+export async function listNewsSitemapEntries(limit = 2000) {
+  const snap = await publishedCollection().orderBy("sortKey", "desc").limit(limit).select("publishedAt").get();
+  return snap.docs.flatMap((doc) => {
+    if (!/^[a-f0-9]{24}$/.test(doc.id)) return [];
+    const publishedAt = doc.get("publishedAt");
+    const lastmod = typeof publishedAt === "string" && /^\d{4}-\d{2}-\d{2}/.test(publishedAt)
+      ? publishedAt.slice(0, 10)
+      : undefined;
+    return [{ id: doc.id, lastmod }];
+  });
+}
+
 export async function getPresidentialNews(id: string) {
   if (!/^[a-f0-9]{24}$/.test(id)) return null;
   const snap = await publishedCollection().doc(id).get();

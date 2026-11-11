@@ -1,5 +1,5 @@
-import Head from "next/head";
 import type { GetServerSideProps } from "next";
+import { Seo } from "../src/components/Seo";
 import { AdminLogin } from "../src/components/AdminLogin";
 import { AdminRawPolls } from "../src/components/AdminRawPolls";
 import type { PublicPollRow } from "../src/lib/polls/summarize";
@@ -18,10 +18,7 @@ type AdminPageProps =
 export default function AdminPage(props: AdminPageProps) {
   return (
     <>
-      <Head>
-        <title>Admin raw polls — US Polls</title>
-        <meta name="robots" content="noindex,nofollow" />
-      </Head>
+      <Seo title="Admin raw polls" description="Private poll archive for the site administrator." path="/admin" noindex />
       {props.authed ? (
         <AdminRawPolls email={props.email} polls={props.polls} raw={props.raw} sync={props.sync} />
       ) : (

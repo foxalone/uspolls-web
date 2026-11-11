@@ -2,5 +2,7 @@ User-agent: *
 Allow: /
 Disallow: /admin
 Disallow: /api/
+Disallow: /__/auth/
+Disallow: /__/firebase/
 
-Sitemap: https://uspolls-web.vercel.app/sitemap.xml
+Sitemap: https://votepulse.site/sitemap.xml

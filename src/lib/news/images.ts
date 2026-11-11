@@ -20,7 +20,7 @@ function plain(value: string) {
 
 const WIKI_HEADERS = {
   Accept: "application/json",
-  "User-Agent": "USPolls/1.0 (https://uspolls-web.vercel.app; 2028 presidential news)",
+  "User-Agent": "VotePulse/1.0 (https://votepulse.site; 2028 presidential news)",
 };
 
 async function wikiJson<T>(url: string): Promise<T | null> {

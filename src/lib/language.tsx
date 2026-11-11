@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { SITE_TAGLINE } from "./site";
 
 export type Language = "en" | "es" | "ru";
 
@@ -14,7 +15,8 @@ const LanguageContext = createContext<LanguageContextValue | null>(null);
 
 export const CHROME = {
   en: {
-    brand: "Presidential race · 2028",
+    home: "VotePulse home",
+    brand: SITE_TAGLINE.en,
     nav: "Main navigation",
     language: "Language",
     theme: "Color theme",
@@ -24,7 +26,8 @@ export const CHROME = {
     footer: "An independent guide to the U.S. presidential election. Polls will appear only with a traceable source, field dates, and sample details. No candidate endorsements or election forecasts.",
   },
   es: {
-    brand: "Carrera presidencial · 2028",
+    home: "Inicio de VotePulse",
+    brand: SITE_TAGLINE.es,
     nav: "Navegación principal",
     language: "Idioma",
     theme: "Tema de color",
@@ -34,7 +37,8 @@ export const CHROME = {
     footer: "Una guía independiente de la elección presidencial de EE. UU. Las encuestas aparecerán solo con fuente verificable, fechas de campo y datos de la muestra. Sin respaldos a candidatos ni pronósticos electorales.",
   },
   ru: {
-    brand: "Президентская гонка · 2028",
+    home: "Главная VotePulse",
+    brand: SITE_TAGLINE.ru,
     nav: "Основная навигация",
     language: "Язык",
     theme: "Цветовая тема",

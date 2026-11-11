@@ -6,11 +6,12 @@
   "auth": {
     "providers": {
       "googleSignIn": {
-        "oAuthBrandDisplayName": "US Polls",
+        "oAuthBrandDisplayName": "VotePulse",
         "supportEmail": "mityabv@gmail.com",
         "authorizedRedirectUris": [
           "https://uspolls-web.firebaseapp.com/__/auth/handler",
           "https://uspolls-web.vercel.app/__/auth/handler",
+          "https://votepulse.site/__/auth/handler",
           "http://localhost",
           "http://127.0.0.1"
         ]
@@ -21,7 +22,8 @@
       "127.0.0.1",
       "uspolls-web.firebaseapp.com",
       "uspolls-web.web.app",
-      "uspolls-web.vercel.app"
+      "uspolls-web.vercel.app",
+      "votepulse.site"
     ]
   }
 }

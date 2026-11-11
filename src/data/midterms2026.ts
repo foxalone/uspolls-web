@@ -1,3 +1,5 @@
+import { SITE_NAME, SITE_TAGLINE, SITE_URL } from "../lib/site";
+
 export type Party = "D" | "R" | "I";
 export type ChamberId = "house" | "senate";
 export type ChangeTone = "up" | "down" | "flat";
@@ -82,10 +84,10 @@ export type TodayCard = {
 };
 
 export const SITE = {
-  name: "US Polls",
-  tagline: "House & Senate midterm monitor",
+  name: SITE_NAME,
+  tagline: SITE_TAGLINE.en,
   year: 2026,
-  url: "https://uspolls-web.vercel.app",
+  url: SITE_URL,
 };
 
 export const GENERIC_BALLOT = {

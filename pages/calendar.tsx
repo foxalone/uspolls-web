@@ -1,4 +1,3 @@
-import Head from "next/head";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { CandidatePair } from "../src/components/CandidatePair";
@@ -6,6 +5,7 @@ import { AllElectionTimeline } from "../src/components/AllElectionTimeline";
 import allTimelineStyles from "../src/components/AllElectionTimeline.module.css";
 import { Historical2024Board } from "../src/components/Historical2024Board";
 import { Us2024ResultsSection } from "../src/components/Us2024Map";
+import { Seo } from "../src/components/Seo";
 import { useLanguage } from "../src/lib/language";
 
 const copy = {
@@ -282,7 +282,7 @@ export default function CalendarPage() {
   }, [tab, language]);
   return (
     <>
-      <Head><title>{t.title} | US Polls 2028</title><meta name="description" content={t.description} /></Head>
+      <Seo title={t.title} description={t.description} path="/calendar" />
       <div className="campaign-stack">
         <section className={`campaign-page-intro timeline-intro${tab === "all" ? ` ${allTimelineStyles.allIntro}` : ""}`}>
           <div className="timeline-intro__copy">

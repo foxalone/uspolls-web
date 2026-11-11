@@ -15,7 +15,7 @@ async function fetchFeeds(): Promise<RawNewsItem[]> {
       const response = await fetch(feed.url, {
         headers: {
           Accept: "application/rss+xml, application/xml, text/xml",
-          "User-Agent": "USPolls/1.0 (2028 presidential news)",
+          "User-Agent": "VotePulse/1.0 (https://votepulse.site; 2028 presidential news)",
         },
         signal: AbortSignal.timeout(12000),
       });
