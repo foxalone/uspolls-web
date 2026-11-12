@@ -11,8 +11,7 @@ export type SitemapEntry = {
 };
 
 export const PUBLIC_SITEMAP_ENTRIES: SitemapEntry[] = [
-  { loc: `${SITE_URL}/`, changefreq: "weekly", priority: "1.0" },
-  { loc: `${SITE_URL}/hub`, changefreq: "daily", priority: "0.9" },
+  { loc: `${SITE_URL}/`, changefreq: "daily", priority: "1.0" },
   { loc: `${SITE_URL}/polls`, changefreq: "daily", priority: "0.9" },
   { loc: `${SITE_URL}/calendar`, changefreq: "weekly", priority: "0.7" },
   { loc: `${SITE_URL}/news`, changefreq: "hourly", priority: "0.8" },

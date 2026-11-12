@@ -1,16 +1,13 @@
 import type { PublicNewsCard } from "../news/types";
 import type { AttentionCard } from "./attention";
 import type { MarketPanel } from "./market";
-import type { HubPollDirectory } from "./polls";
+import type { HomePollDirectory } from "./polls";
 
-export type HubNewsItem = PublicNewsCard;
-
-export type PresidentialHub = HubPollDirectory & {
+export type PresidentialHome = HomePollDirectory & {
   generatedOn: string;
-  news: HubNewsItem[];
+  news: PublicNewsCard[];
   market: MarketPanel;
   attention: AttentionCard[];
-  showAd: boolean;
 };
 
 export const EMPTY_MARKET: MarketPanel = {

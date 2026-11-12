@@ -262,7 +262,7 @@ type TimelineTab = "all" | "2012" | "2016" | "2020" | "2024" | "2028";
 export default function CalendarPage() {
   const { language } = useLanguage();
   const t = copy[language];
-  const [tab, setTab] = useState<TimelineTab>("2024");
+  const [tab, setTab] = useState<TimelineTab>("2028");
   useEffect(() => {
     const node = document.getElementById(`timeline-tab-${tab}`);
     const list = node?.parentElement;

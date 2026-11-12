@@ -58,7 +58,7 @@ export default function AttentionPage({ items }: { items: AttentionCard[] }) {
           <p>{t.lead}</p>
           <p className="hub-outlinks">
             <a className="campaign-text-link" href={RACE_TRENDS_HREF} rel="noreferrer" target="_blank">{t.trends}</a>
-            <Link className="campaign-text-link" href="/hub" prefetch={false}>{t.home}</Link>
+            <Link className="campaign-text-link" href="/" prefetch={false}>{t.home}</Link>
           </p>
         </section>
         {items.length === 0 ? <section className="campaign-panel"><p>{t.empty}</p></section> : (

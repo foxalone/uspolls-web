@@ -5,29 +5,28 @@ import { currentNyDate } from "./dates";
 import { loadPolymarket } from "./market";
 import { HOME_NEWS_LIMIT, orderHomeNews } from "./newsOrder";
 import { shapePresidentialPolls } from "./polls";
-import { EMPTY_MARKET, type PresidentialHub } from "./types";
+import { EMPTY_MARKET, type PresidentialHome } from "./types";
 
 export const HOME_REVALIDATE_SECONDS = 15 * 60;
 export const HOME_RETRY_SECONDS = 60;
 const SOURCE_TIMEOUT_MS = 15_000;
 
-export async function loadPresidentialHub(): Promise<{ hub: PresidentialHub; revalidate: number }> {
+export async function loadPresidentialHome(): Promise<{ home: PresidentialHome; revalidate: number }> {
   const generatedOn = currentNyDate();
   const polls = shapePresidentialPolls();
   const [news, market, attention] = await Promise.all([
     settle(loadHomeNews(), [] as PublicNewsCard[]),
     settle(loadPolymarket(generatedOn), { ...EMPTY_MARKET }),
-    settle(loadAttention(shiftKey(generatedOn, -1), 14), [] as PresidentialHub["attention"]),
+    settle(loadAttention(shiftKey(generatedOn, -1), 14), [] as PresidentialHome["attention"]),
   ]);
   const degraded = news.failed || market.failed || attention.failed;
   return {
-    hub: {
+    home: {
       ...polls,
       generatedOn,
       news: orderHomeNews(news.value),
       market: market.value,
       attention: attention.value,
-      showAd: adFilled(),
     },
     revalidate: degraded ? HOME_RETRY_SECONDS : HOME_REVALIDATE_SECONDS,
   };
@@ -36,12 +35,6 @@ export async function loadPresidentialHub(): Promise<{ hub: PresidentialHub; rev
 async function loadHomeNews() {
   const page = await listPresidentialNews(HOME_NEWS_LIMIT);
   return orderHomeNews(page.items);
-}
-
-function adFilled() {
-  if (process.env.NODE_ENV !== "production") return false;
-  if (process.env.VERCEL_ENV === "preview") return false;
-  return false;
 }
 
 function settle<T>(work: Promise<T>, fallback: T, ms = SOURCE_TIMEOUT_MS) {

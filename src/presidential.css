@@ -280,7 +280,6 @@
 .campaign-hero,
 .campaign-page-intro,
 .campaign-panel,
-.campaign-facts,
 .timeline-list {
   min-width: 0;
   border: 1px solid var(--campaign-stroke);
@@ -367,41 +366,12 @@
   background: color-mix(in srgb, var(--campaign-panel) 74%, transparent);
 }
 
-.election-date-card {
-  display: grid;
-  align-content: center;
-  min-height: 16rem;
-  padding: 1.6rem;
-  border: 1px solid var(--campaign-stroke);
-  border-radius: 1.1rem;
-  background: color-mix(in srgb, var(--campaign-panel) 86%, transparent);
-  box-shadow: 0 22px 45px rgba(4, 12, 25, 0.12);
-}
-
-.election-date-card__label,
 .campaign-section-label {
   color: var(--campaign-accent);
   font-size: 0.73rem;
   font-weight: 800;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-}
-
-.election-date-card > strong {
-  margin: 0.85rem 0;
-  font-size: clamp(1.6rem, 3vw, 2.5rem);
-  line-height: 1.1;
-}
-
-.election-date-card__rule {
-  height: 1px;
-  margin: 0.55rem 0 1rem;
-  background: var(--campaign-stroke);
-}
-
-.election-date-card p {
-  color: var(--campaign-subtle);
-  font-weight: 650;
 }
 
 .election-countdown {
@@ -419,17 +389,12 @@
   min-width: 0;
 }
 
-.election-countdown__unit b,
-.election-countdown__sep {
+.election-countdown__unit b {
   color: var(--campaign-accent);
   font-size: clamp(1.35rem, 2.2vw, 1.85rem);
   font-weight: 800;
   font-variant-numeric: tabular-nums;
   line-height: 1;
-}
-
-.election-countdown__sep {
-  opacity: 0.55;
 }
 
 .election-countdown__unit span {
@@ -438,34 +403,6 @@
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-}
-
-.campaign-facts {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  background: var(--campaign-panel);
-}
-
-.campaign-facts > div {
-  display: grid;
-  gap: 0.3rem;
-  padding: 1.4rem 1.8rem;
-}
-
-.campaign-facts > div + div {
-  border-left: 1px solid var(--campaign-stroke);
-}
-
-.campaign-facts strong {
-  color: var(--campaign-accent);
-  font-size: clamp(1.5rem, 3vw, 2rem);
-  line-height: 1;
-}
-
-.campaign-facts span {
-  color: var(--campaign-subtle);
-  font-size: 0.82rem;
-  font-weight: 650;
 }
 
 .campaign-columns {
@@ -1660,9 +1597,6 @@
     min-height: 12.5rem;
   }
 
-  .election-date-card {
-    min-height: 10rem;
-  }
 }
 
 @media (max-width: 720px) {
@@ -1694,10 +1628,6 @@
 
   .campaign-panel {
     padding: 1rem;
-  }
-
-  .campaign-facts > div {
-    padding: 1rem 1.05rem;
   }
 
   .campaign-header__inner {
@@ -1772,14 +1702,8 @@
     min-height: 0;
   }
 
-  .campaign-facts,
   .campaign-columns {
     grid-template-columns: 1fr;
-  }
-
-  .campaign-facts > div + div {
-    border-left: 0;
-    border-top: 1px solid var(--campaign-stroke);
   }
 
   .poll-sources,
@@ -1829,27 +1753,6 @@
   .poll-row--loading::after { animation: none; }
 }
 
-.campaign-hero.hub-hero {
-  min-height: 0;
-  display: block;
-}
-
-.campaign-hero.hub-hero h1 {
-  max-width: 18em;
-  font-size: clamp(2.15rem, 4.4vw, 3.5rem);
-}
-
-.hub-updated {
-  max-width: 54ch;
-  margin: 0.8rem 0 0;
-  color: var(--campaign-ink);
-  font-weight: 700;
-}
-
-.hub-chips {
-  justify-content: flex-start;
-}
-
 .hub-timeline {
   display: flex;
   gap: 0.75rem;
@@ -1881,11 +1784,6 @@
   font-weight: 750;
 }
 
-.hub-timeline__node b {
-  color: var(--campaign-accent);
-  font-size: 0.78rem;
-}
-
 .hub-timeline__node strong {
   font-size: 0.95rem;
 }
@@ -1907,16 +1805,6 @@
 
 .hub-timeline__node.is-election {
   background: color-mix(in srgb, #e55850 18%, var(--campaign-panel));
-}
-
-.election-countdown--compact {
-  max-width: 22rem;
-  margin-top: 0.8rem;
-}
-
-.election-countdown--compact .election-countdown__unit b,
-.election-countdown--compact .election-countdown__sep {
-  font-size: 1.2rem;
 }
 
 .hub-outlinks {
@@ -2011,5 +1899,252 @@ a.hub-entity {
   .hub-entities,
   .hub-bar {
     grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.presidential-home {
+  gap: clamp(1rem, 2vw, 1.5rem);
+}
+
+.campaign-hero.presidential-home__hero {
+  min-height: 0;
+  grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr);
+  gap: clamp(1.15rem, 2.7vw, 2.3rem);
+  padding: clamp(1.15rem, 3.2vw, 2.75rem);
+}
+
+.presidential-home__hero h1 {
+  max-width: 13ch;
+  margin: 0.65rem 0 0.9rem;
+  font-size: clamp(2.35rem, 5.7vw, 5.5rem);
+  line-height: 0.98;
+  text-wrap: balance;
+}
+
+.presidential-home__intro p {
+  margin: 0;
+}
+
+.presidential-home__links {
+  margin-top: 1.35rem;
+  gap: 0.5rem;
+}
+
+.presidential-home__links a {
+  min-height: 2.45rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 0.55rem;
+}
+
+.presidential-home__links a:hover {
+  box-shadow: inset 0 0 0 1px currentColor;
+}
+
+.presidential-home__election {
+  display: grid;
+  align-content: end;
+  align-self: stretch;
+  min-height: 16rem;
+  overflow: hidden;
+  border: 1px solid var(--campaign-stroke);
+  border-radius: 1.05rem;
+  background:
+    linear-gradient(180deg, rgba(11, 28, 48, 0.08) 6%, rgba(11, 28, 48, 0.26) 43%, #0b1c30 87%),
+    /* North Portico, White House photo by Tina Hager, public domain. */
+    url("/white-house.jpg") center 47% / cover no-repeat,
+    #152d4a;
+  color: #f7f3eb;
+}
+
+.presidential-home__countdown {
+  padding: clamp(0.9rem, 2vw, 1.45rem);
+}
+
+.presidential-home__countdown p {
+  margin: 0;
+  color: #f6be73;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.presidential-home__countdown time {
+  display: block;
+  margin: 0.12rem 0 0.8rem;
+  font-size: clamp(1.4rem, 2.8vw, 2.25rem);
+  font-weight: 800;
+  line-height: 1.05;
+}
+
+.presidential-home__countdown .election-countdown {
+  gap: 0.4rem;
+}
+
+.presidential-home__countdown .election-countdown__unit {
+  gap: 0.25rem;
+  padding: 0.55rem 0.15rem;
+  border: 1px solid rgba(224, 235, 254, 0.18);
+  border-radius: 0.5rem;
+  background: rgba(15, 34, 59, 0.82);
+}
+
+.presidential-home__countdown .election-countdown__unit b {
+  color: #f7f3eb;
+}
+
+.presidential-home__countdown .election-countdown__unit span {
+  color: #c2cde0;
+}
+
+.presidential-home__facts {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.65rem;
+  margin: 0;
+}
+
+.presidential-home__facts div {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.15rem 0.65rem;
+  padding: 0.65rem 0.85rem;
+  border: 1px solid var(--campaign-stroke);
+  border-radius: 0.65rem;
+  background: color-mix(in srgb, var(--campaign-panel) 75%, transparent);
+}
+
+.presidential-home__facts dt {
+  color: var(--campaign-subtle);
+  font-size: 0.9rem;
+  font-weight: 650;
+}
+
+.presidential-home__facts dd {
+  margin: 0;
+  font-size: clamp(1rem, 1.75vw, 1.35rem);
+  font-weight: 800;
+}
+
+.presidential-home__panel {
+  padding: clamp(1.1rem, 2.75vw, 2rem);
+}
+
+.presidential-home__panel .hub-news-head {
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.35rem 1rem;
+}
+
+.presidential-home__polls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.presidential-home__polls a {
+  display: grid;
+  align-content: start;
+  gap: 0.4rem;
+  padding: 0.95rem;
+  border: 1px solid var(--campaign-stroke);
+  border-radius: 0.85rem;
+  background: var(--campaign-panel-2);
+  color: var(--campaign-ink);
+  text-decoration: none;
+}
+
+.presidential-home__polls a:hover {
+  border-color: var(--campaign-accent);
+  text-decoration: none;
+}
+
+.presidential-home__poll h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  line-height: 1.2;
+}
+
+.presidential-home__poll-meta {
+  color: var(--campaign-subtle);
+  font-size: 0.81rem;
+  font-weight: 650;
+}
+
+.presidential-home__poll-results {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.5rem;
+  margin-top: 0.35rem;
+}
+
+.presidential-home__poll-results span {
+  display: grid;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--campaign-stroke);
+}
+
+.presidential-home__poll-results b {
+  color: var(--campaign-accent);
+  font-size: 1.65rem;
+  line-height: 1.15;
+  font-variant-numeric: tabular-nums;
+}
+
+.presidential-home__pollsters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem 1rem;
+  margin-top: 1rem;
+  font-size: 0.88rem;
+}
+
+.presidential-home__timeline {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  overflow: visible;
+}
+
+.presidential-home__timeline time {
+  color: var(--campaign-subtle);
+  font-size: 0.78rem;
+  font-weight: 750;
+}
+
+.presidential-home .hub-news-strip {
+  margin-top: 1rem;
+}
+
+@media (max-width: 850px) {
+  .campaign-hero.presidential-home__hero {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .presidential-home__election {
+    background-position: center 39%;
+  }
+
+  .presidential-home__countdown .election-countdown {
+    max-width: 24rem;
+  }
+
+  .presidential-home__timeline {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 500px) {
+  .presidential-home__facts div {
+    display: grid;
+    align-content: start;
+    padding: 0.55rem;
+  }
+
+  .presidential-home__facts dt {
+    font-size: 0.75rem;
   }
 }

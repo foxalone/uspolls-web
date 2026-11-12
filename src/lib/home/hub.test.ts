@@ -17,7 +17,7 @@ import {
 } from "./dates";
 import { parsePolymarketEvent, polymarketHidden } from "./market";
 import { orderHomeNews } from "./newsOrder";
-import { boundedPollCount, HUB_CHIPS, shapePresidentialPolls } from "./polls";
+import { boundedPollCount, HOME_QUICK_LINKS, shapePresidentialPolls } from "./polls";
 import type { PublicNewsCard } from "../news/types";
 
 test("presidential dates follow the federal calendar", () => {
@@ -65,7 +65,7 @@ test("poll links stay inside the presidential race and cap the public count", ()
   assert.deepEqual(shaped.pollsters.map((item) => item.href), ["/pollsters/atlas", "/pollsters/beacon"]);
   assert.equal(boundedPollCount(12), "12");
   assert.equal(boundedPollCount(1000), "1,000+");
-  assert.equal(HUB_CHIPS.map((chip) => chip.href).join(" "), "/average /candidates /electoral-college /sources");
+  assert.equal(HOME_QUICK_LINKS.map((chip) => chip.href).join(" "), "/average /candidates /electoral-college /sources");
 });
 
 test("a polymarket payload becomes ranked bars and a date flag can hide it", () => {

@@ -46,7 +46,8 @@ export default function AveragePage() {
           <p>{t.lead}</p>
         </section>
         <section className="campaign-panel">
-          {PRESIDENTIAL_POLLS.length === 0 ? <p>{t.empty}</p> : (
+          <p>{t.empty}</p>
+          {PRESIDENTIAL_POLLS.length > 0 ? (
             <>
               <h2>{t.list}</h2>
               <ul className="hub-directory">
@@ -55,7 +56,7 @@ export default function AveragePage() {
                 ))}
               </ul>
             </>
-          )}
+          ) : null}
         </section>
       </div>
     </>

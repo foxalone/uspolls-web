@@ -163,7 +163,7 @@ type PollTab = "2012" | "2016" | "2020" | "2024" | "2028";
 export default function PollsPage() {
   const { language } = useLanguage();
   const t = copy[language];
-  const [tab, setTab] = useState<PollTab>("2024");
+  const [tab, setTab] = useState<PollTab>("2028");
   useEffect(() => {
     document.getElementById(`poll-tab-${tab}`)?.scrollIntoView({ inline: "nearest", block: "nearest" });
   }, [tab]);

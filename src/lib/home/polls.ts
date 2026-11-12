@@ -1,26 +1,25 @@
 import { PRESIDENTIAL_POLLS, type PresidentialPoll } from "../../data/presidential2028";
 
-export type HubPollLink = {
+export type HomePollLink = {
   href: string;
   pollster: string;
   endDate: string;
 };
 
-export type HubPollsterLink = {
+export type HomePollsterLink = {
   href: string;
   name: string;
 };
 
-export type HubPollDirectory = {
+export type HomePollDirectory = {
   count: number;
   pollsterCount: number;
   latest: { pollster: string; endDate: string } | null;
-  newest: HubPollLink[];
-  pollsters: HubPollsterLink[];
-  latestPolls: HubPollLink[];
+  newest: (HomePollLink & Pick<PresidentialPoll, "question" | "scope" | "results">)[];
+  pollsters: HomePollsterLink[];
 };
 
-export const HUB_CHIPS = [
+export const HOME_QUICK_LINKS = [
   { href: "/average", key: "average" },
   { href: "/candidates", key: "candidates" },
   { href: "/electoral-college", key: "college" },
@@ -38,11 +37,18 @@ export function pollsterSlug(name: string) {
   return base.slice(0, 80) || "pollster";
 }
 
-export function shapePresidentialPolls(polls: PresidentialPoll[] = PRESIDENTIAL_POLLS): HubPollDirectory {
+export function shapePresidentialPolls(polls: PresidentialPoll[] = PRESIDENTIAL_POLLS): HomePollDirectory {
   const sorted = [...polls].sort((a, b) => b.endDate.localeCompare(a.endDate) || a.id.localeCompare(b.id));
   const links = sorted.flatMap((poll) => {
     if (!SAFE_SLUG.test(poll.id)) return [];
-    return [{ href: `/polls/${poll.id}`, pollster: poll.pollster, endDate: poll.endDate }];
+    return [{
+      href: `/polls/${poll.id}`,
+      pollster: poll.pollster,
+      endDate: poll.endDate,
+      question: poll.question,
+      scope: poll.scope,
+      results: poll.results,
+    }];
   });
   const pollsters = new Map<string, { name: string; last: string }>();
   for (const poll of sorted) {
@@ -62,7 +68,6 @@ export function shapePresidentialPolls(polls: PresidentialPoll[] = PRESIDENTIAL_
     latest,
     newest: links.slice(0, 3),
     pollsters: pollsterLinks,
-    latestPolls: links.slice(0, 40),
   };
 }
 
