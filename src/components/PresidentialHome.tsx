@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { NewsCube } from "./PresidentialNews";
 import { TrendSparkline } from "./TrendSparkline";
 import {
@@ -67,6 +67,8 @@ const copy = {
     marketLink: "View on Polymarket",
     newsTitle: "What’s happening now",
     allNews: "All news",
+    previousNews: "Scroll news left",
+    nextNews: "Scroll news right",
     newsEmpty: "No presidential headlines are published right now.",
     photo: "Photo",
     buzzTitle: "Most talked about right now",
@@ -126,6 +128,8 @@ const copy = {
     marketLink: "Ver en Polymarket",
     newsTitle: "Qué está pasando",
     allNews: "Todas las noticias",
+    previousNews: "Desplazar noticias a la izquierda",
+    nextNews: "Desplazar noticias a la derecha",
     newsEmpty: "Ahora mismo no hay titulares presidenciales publicados.",
     photo: "Foto",
     buzzTitle: "De lo que más se habla ahora",
@@ -185,6 +189,8 @@ const copy = {
     marketLink: "Открыть на Polymarket",
     newsTitle: "Что происходит сейчас",
     allNews: "Все новости",
+    previousNews: "Листать новости влево",
+    nextNews: "Листать новости вправо",
     newsEmpty: "Сейчас нет опубликованных заголовков о президентской гонке.",
     photo: "Фото",
     buzzTitle: "О ком говорят прямо сейчас",
@@ -358,7 +364,11 @@ function HomeNews({
 }) {
   const [items, setItems] = useState(initial);
   const [now, setNow] = useState<number | null>(null);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+  const stripRef = useRef<HTMLDivElement>(null);
   const text = language === "es" ? "es" : "en";
+  const t = copy[language];
 
   useEffect(() => {
     let stop = false;
@@ -386,14 +396,51 @@ function HomeNews({
     };
   }, []);
 
+  useEffect(() => {
+    const strip = stripRef.current;
+    if (!strip) return;
+
+    const updateControls = () => {
+      const remaining = strip.scrollWidth - strip.clientWidth - strip.scrollLeft;
+      setCanScrollLeft(strip.scrollLeft > 1);
+      setCanScrollRight(remaining > 1);
+    };
+    const observer = new ResizeObserver(updateControls);
+    observer.observe(strip);
+    strip.addEventListener("scroll", updateControls, { passive: true });
+    updateControls();
+
+    return () => {
+      observer.disconnect();
+      strip.removeEventListener("scroll", updateControls);
+    };
+  }, [items.length]);
+
+  function scrollNews(direction: -1 | 1) {
+    const strip = stripRef.current;
+    if (!strip || (direction === -1 ? !canScrollLeft : !canScrollRight)) return;
+
+    const first = strip.children[0]?.getBoundingClientRect();
+    const second = strip.children[1]?.getBoundingClientRect();
+    if (first && second) strip.scrollBy({ left: direction * (second.left - first.left) });
+  }
+
   return (
     <section className="campaign-panel presidential-home__panel" aria-labelledby="home-news-title">
       <header className="hub-news-head">
         <h2 id="home-news-title">{title}</h2>
-        <Link className="campaign-text-link" href="/news" prefetch={false}>{viewAll} →</Link>
+        <div className={styles.stripActions}>
+          <Link className="campaign-text-link" href="/news" prefetch={false}>{viewAll} →</Link>
+          {items.length > 1 && (canScrollLeft || canScrollRight) ? (
+            <div className={styles.stripButtons}>
+              <button type="button" aria-label={t.previousNews} aria-controls="home-news-strip" aria-disabled={!canScrollLeft} onClick={() => scrollNews(-1)}>←</button>
+              <button type="button" aria-label={t.nextNews} aria-controls="home-news-strip" aria-disabled={!canScrollRight} onClick={() => scrollNews(1)}>→</button>
+            </div>
+          ) : null}
+        </div>
       </header>
       {items.length === 0 ? <p>{empty}</p> : (
-        <div className={`${styles.strip} hub-news-strip`}>
+        <div className={`${styles.strip} hub-news-strip`} id="home-news-strip" ref={stripRef} role="group" aria-labelledby="home-news-title" tabIndex={0}>
           {items.map((item, index) => (
             <NewsCube
               ageLabel={now === null ? formatNyStamp(item.publishedAt, languageLocale(language)) : newsAge(item.publishedAt, language, now)}
