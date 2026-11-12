@@ -1883,6 +1883,60 @@ a.hub-entity {
   color: #e55850;
 }
 
+.campaign-page-intro.candidate-intro {
+  padding: clamp(1.25rem, 3.2vw, 2.75rem);
+}
+
+.candidate-intro h1 {
+  max-width: none;
+  font-size: clamp(2rem, 5vw, 4rem);
+}
+
+.candidate-attention__stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr));
+  gap: 0.65rem;
+  margin: 1rem 0;
+}
+
+.candidate-attention__stats div {
+  padding: 0.65rem 0.85rem;
+  border: 1px solid var(--campaign-stroke);
+  border-radius: 0.65rem;
+  background: var(--campaign-panel-2);
+}
+
+.candidate-attention__stats dt,
+.candidate-attention__chart figcaption {
+  color: var(--campaign-subtle);
+  font-size: 0.86rem;
+}
+
+.candidate-attention__stats dd {
+  margin: 0.2rem 0 0;
+  font-size: clamp(1.25rem, 2.6vw, 1.85rem);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.candidate-attention__chart {
+  margin: 1rem 0;
+}
+
+.candidate-attention__line {
+  display: block;
+  width: 100%;
+  border-bottom: 1px solid var(--campaign-stroke);
+  color: var(--campaign-accent);
+}
+
+.candidate-attention__chart figcaption {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-top: 0.45rem;
+}
+
 .hub-directory {
   display: grid;
   gap: 0.45rem;

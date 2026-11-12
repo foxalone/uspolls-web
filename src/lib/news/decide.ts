@@ -1,4 +1,4 @@
-import { clipWords } from "./text";
+import { clipWords, titleKey } from "./text";
 import type { AcceptedNews, ModelDecision, RawNewsItem } from "./types";
 
 const NAME_EN = /^[A-Z][A-Za-z.'-]+(?: [A-Z][A-Za-z.'-]+){0,4}$/;
@@ -17,6 +17,13 @@ function textPair(row: Record<string, unknown>, name: string, max: number) {
   const english = clipWords(field(row, name, "en"), max);
   const spanish = clipWords(field(row, name, "es"), max) || english;
   return english ? { en: english, es: spanish } : null;
+}
+
+function bodyText(value: string, teaser: string) {
+  const paragraphs = value.trim().split(/\r?\n\s*\r?\n/).map((part) => clipWords(part, 120)).filter(Boolean);
+  const body = paragraphs.slice(0, 3).join("\n\n");
+  const words = body.split(/\s+/).length;
+  return words <= 130 && words >= 35 && titleKey(body) !== titleKey(teaser) ? body : "";
 }
 
 export function parseDecisions(raw: string): ModelDecision[] {
@@ -56,6 +63,10 @@ export function parseDecisions(raw: string): ModelDecision[] {
         : String(row.duplicate_of),
       headline: headline || { en: "", es: "" },
       teaser: teaser || { en: "", es: "" },
+      body: {
+        en: bodyText(field(row, "body", "en"), teaser?.en ?? ""),
+        es: bodyText(field(row, "body", "es"), teaser?.es ?? ""),
+      },
       people,
       topic: clipWords(typeof row.topic === "string" ? row.topic : "", 3),
     });
@@ -96,6 +107,7 @@ export function acceptDecisions(items: RawNewsItem[], decisions: ModelDecision[]
       item,
       headline: decision.headline,
       teaser: decision.teaser,
+      body: item.summary ? decision.body : { en: "", es: "" },
       people: decision.people,
       topic: decision.topic || "2028",
     });

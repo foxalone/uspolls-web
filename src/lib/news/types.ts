@@ -23,6 +23,7 @@ export type ModelDecision = {
   duplicateOf: string | null;
   headline: NewsText;
   teaser: NewsText;
+  body: NewsText;
   people: { name: string; nameEn: string }[];
   topic: string;
 };
@@ -31,6 +32,7 @@ export type AcceptedNews = {
   item: RawNewsItem;
   headline: NewsText;
   teaser: NewsText;
+  body: NewsText;
   people: { name: string; nameEn: string }[];
   topic: string;
 };

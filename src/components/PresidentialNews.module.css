@@ -339,6 +339,9 @@
 }
 
 .original {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem 1rem;
   margin: 0.2rem 0 0;
   color: var(--campaign-subtle);
   font-size: 0.95rem;

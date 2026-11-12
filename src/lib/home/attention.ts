@@ -1,6 +1,8 @@
 import { RACE_ENTITIES, type RaceEntity, type RaceKind } from "./entities";
+import { currentNyDate } from "./dates";
 
 const MIN_RECENT_VIEWS = 1000;
+const ATTENTION_HISTORY_DAYS = 90;
 const USER_AGENT = "VotePulse/1.0 (https://votepulse.site; presidential attention)";
 
 export type AttentionCard = {
@@ -13,6 +15,13 @@ export type AttentionCard = {
 };
 
 type ViewDay = { date: string; views: number };
+
+export type EntityAttention = {
+  startDate: string;
+  endDate: string;
+  series: (number | null)[];
+  comparison: { recent: number; previous: number; change: number | null } | null;
+};
 
 export function compareAttention(recent: number[], previous: number[]): {
   change: number;
@@ -40,12 +49,31 @@ export function parsePageviews(payload: unknown): ViewDay[] {
 }
 
 export function seriesEnding(days: ViewDay[], endKey: string, length: number) {
+  return dailyViewsEnding(days, endKey, length).map((views) => views ?? 0);
+}
+
+function dailyViewsEnding(days: ViewDay[], endKey: string, length: number) {
   const byDate = new Map(days.map((day) => [day.date, day.views]));
-  const series: number[] = [];
-  for (let offset = length - 1; offset >= 0; offset -= 1) {
-    series.push(byDate.get(shiftKey(endKey, -offset)) ?? 0);
-  }
-  return series;
+  return Array.from({ length }, (_, index) => byDate.get(shiftKey(endKey, index - length + 1)) ?? null);
+}
+
+export async function loadEntityAttention(entity: RaceEntity): Promise<EntityAttention | null> {
+  const endDate = shiftKey(currentNyDate(), -1);
+  const startDate = shiftKey(endDate, 1 - ATTENTION_HISTORY_DAYS);
+  const days = await fetchPageviews(entity, startDate, endDate, AbortSignal.timeout(10_000));
+  if (days.length < 2) return null;
+
+  const series = dailyViewsEnding(days, endDate, ATTENTION_HISTORY_DAYS);
+  const recent = series.slice(-14);
+  const previous = series.slice(-28, -14);
+  const comparison = recent.every((value) => value !== null) && previous.every((value) => value !== null)
+    ? {
+      recent: recent.reduce((total, views) => total + views, 0),
+      previous: previous.reduce((total, views) => total + views, 0),
+      change: compareAttention(recent, previous)?.change ?? null,
+    }
+    : null;
+  return { startDate, endDate, series, comparison };
 }
 
 export async function loadAttention(endKey: string, sparkDays: number): Promise<AttentionCard[]> {
@@ -82,12 +110,13 @@ export async function loadAttention(endKey: string, sparkDays: number): Promise<
     .map(({ recentTotal: _recentTotal, ...card }) => card);
 }
 
-async function fetchPageviews(entity: RaceEntity, startKey: string, endKey: string) {
+async function fetchPageviews(entity: RaceEntity, startKey: string, endKey: string, signal?: AbortSignal) {
   const start = `${startKey.replaceAll("-", "")}00`;
   const end = `${endKey.replaceAll("-", "")}00`;
   const url = `https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/en.wikipedia/all-access/user/${encodeURIComponent(entity.wiki)}/daily/${start}/${end}`;
   const response = await fetch(url, {
     cache: "no-store",
+    signal,
     headers: { accept: "application/json", "user-agent": USER_AGENT },
   });
   if (response.status === 404) return [];

@@ -1,7 +1,7 @@
 type TrendSparklineProps = {
   className?: string;
   height?: number;
-  series: number[];
+  series: readonly (number | null)[];
   width?: number;
 };
 
@@ -11,22 +11,25 @@ export function TrendSparkline({
   series,
   width = 132,
 }: TrendSparklineProps) {
-  const max = Math.max(...series, 1);
-  const min = Math.min(...series, 0);
+  const values = series.filter((value) => value !== null);
+  const max = Math.max(...values, 1);
+  const min = Math.min(...values, 0);
   const span = Math.max(max - min, 1);
-  const points = series
-    .map((value, index) => {
+  const path = series
+    .flatMap((value, index) => {
+      if (value === null) return [];
       const x = (index / Math.max(series.length - 1, 1)) * width;
       const y = height - ((value - min) / span) * (height - 6) - 3;
-      return `${x.toFixed(1)},${y.toFixed(1)}`;
+      const command = index === 0 || series[index - 1] === null ? "M" : "L";
+      return [`${command}${x.toFixed(1)},${y.toFixed(1)}`];
     })
     .join(" ");
 
   return (
     <svg aria-hidden="true" className={className} viewBox={`0 0 ${width} ${height}`}>
-      <polyline
+      <path
         fill="none"
-        points={points}
+        d={path}
         stroke="currentColor"
         strokeLinecap="round"
         strokeLinejoin="round"

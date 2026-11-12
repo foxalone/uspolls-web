@@ -3,13 +3,14 @@ import Link from "next/link";
 import { Seo } from "../../src/components/Seo";
 import { languageLocale, useLanguage, type Language } from "../../src/lib/language";
 import { RelatedNews } from "../../src/components/PresidentialNews";
+import { archiveDetails, type ArchiveDetail } from "../../src/lib/news/archiveDetails";
 import type { PublicNewsCard } from "../../src/lib/news/types";
 import styles from "../../src/components/PresidentialNews.module.css";
 
 const copy = {
-  en: { back: "All news", missing: "This story is no longer available." },
-  es: { back: "Todas las noticias", missing: "Esta nota ya no está disponible." },
-  ru: { back: "Все новости", missing: "Этого материала больше нет." },
+  en: { back: "All news", missing: "This story is no longer available.", original: "Read the original", context: "Additional source" },
+  es: { back: "Todas las noticias", missing: "Esta nota ya no está disponible.", original: "Leer el original", context: "Fuente adicional" },
+  ru: { back: "Все новости", missing: "Этого материала больше нет.", original: "Читать оригинал", context: "Дополнительный источник" },
 } as const;
 
 function words(language: Language) {
@@ -26,7 +27,9 @@ function when(iso: string, language: Language) {
   return date.toLocaleString(languageLocale(language), { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" });
 }
 
-export default function NewsItemPage({ item, more }: { item: PublicNewsCard | null; more: PublicNewsCard[] }) {
+type NewsItemProps = { item: PublicNewsCard | null; more: PublicNewsCard[]; detail: ArchiveDetail | null };
+
+export default function NewsItemPage({ item, more, detail }: NewsItemProps) {
   const { language } = useLanguage();
   const t = copy[language];
   const text = words(language);
@@ -43,6 +46,7 @@ export default function NewsItemPage({ item, more }: { item: PublicNewsCard | nu
   }
   const headline = item.headline[text] || item.headline.en;
   const teaser = item.teaser[text] || item.teaser.en;
+  const body = item.body[text] || detail?.body[text] || teaser;
   return (
     <>
       <Seo title={headline} description={teaser} path={`/news/${item.id}`} type="article" />
@@ -63,9 +67,14 @@ export default function NewsItemPage({ item, more }: { item: PublicNewsCard | nu
             {item.topic ? <span className={styles.topic}>{item.topic}</span> : null}
             <h1 lang={text}>{headline}</h1>
             <div className={styles.articleBody} lang={text}>
-              {paragraphs(item.body[text] || item.teaser[text]).map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+              {paragraphs(body).map((paragraph, index) => <p key={index}>{paragraph}</p>)}
             </div>
-            <p className={styles.original}><a href={item.url} target="_blank" rel="noreferrer">{item.source}</a></p>
+            <p className={styles.original}>
+              <a href={detail?.original || item.url} target="_blank" rel="noreferrer">{t.original} · {item.source}</a>
+              {detail?.context ? (
+                <a href={detail.context.href} target="_blank" rel="noreferrer">{t.context} · {detail.context.label}</a>
+              ) : null}
+            </p>
           </div>
         </div>
       </article>
@@ -74,7 +83,7 @@ export default function NewsItemPage({ item, more }: { item: PublicNewsCard | nu
   );
 }
 
-export const getServerSideProps: GetServerSideProps<{ item: PublicNewsCard | null; more: PublicNewsCard[] }> = async ({ params, res }) => {
+export const getServerSideProps: GetServerSideProps<NewsItemProps> = async ({ params, res }) => {
   const id = typeof params?.id === "string" ? params.id : "";
   res.setHeader("Cache-Control", "public, max-age=60, s-maxage=120, stale-while-revalidate=300");
   try {
@@ -82,7 +91,7 @@ export const getServerSideProps: GetServerSideProps<{ item: PublicNewsCard | nul
     const [item, page] = await Promise.all([getPresidentialNews(id), listPresidentialNews(8)]);
     if (!item) return { notFound: true };
     const more = page.items.filter((entry) => entry.id !== item.id).slice(0, 4);
-    return { props: { item, more } };
+    return { props: { item, more, detail: archiveDetails[item.id] ?? null } };
   } catch {
     return { notFound: true };
   }

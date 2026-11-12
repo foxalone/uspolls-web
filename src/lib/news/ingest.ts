@@ -3,13 +3,16 @@ import { commonsPortrait } from "./images";
 import { buildPrompt, completeNewsPrompt } from "./model";
 import { NEWS_FEEDS, parseRss } from "./rss";
 import { finishNewsRun, lockNewsRun, recentNews, saveNewsRun, seenNewsIds } from "./store";
+import { titleKey } from "./text";
 import type { RawNewsItem } from "./types";
 
 const MODEL_LIMIT = 10;
 const RECENT_LIMIT = 30;
 const PORTRAIT_LIMIT = 4;
+const PUBLISHER_LOOKBACK_MS = 3 * 24 * 60 * 60 * 1000;
 
 async function fetchFeeds(): Promise<RawNewsItem[]> {
+  const publisherCutoff = Date.now() - PUBLISHER_LOOKBACK_MS;
   const batches = await Promise.all(NEWS_FEEDS.map(async (feed) => {
     try {
       const response = await fetch(feed.url, {
@@ -20,12 +23,21 @@ async function fetchFeeds(): Promise<RawNewsItem[]> {
         signal: AbortSignal.timeout(12000),
       });
       if (!response.ok) return [];
-      return parseRss(await response.text(), feed.language, 10);
+      const items = parseRss(await response.text(), feed.language, feed.publisher ? 20 : 10, feed.publisher);
+      return feed.publisher ? items.filter((item) =>
+        Date.parse(item.publishedAt) >= publisherCutoff && /\b2028\b/.test(`${item.title} ${item.summary}`)
+      ) : items;
     } catch {
       return [];
     }
   }));
-  return batches.flat();
+  const sourceKey = (item: RawNewsItem) => `${titleKey(item.source)}:${item.titleKey}`;
+  const publisherItems = batches.flatMap((items, index) => NEWS_FEEDS[index].publisher ? items : []);
+  const contextByTitle = new Map(publisherItems.map((item) => [sourceKey(item), item.summary]));
+  return batches.flat().map((item) => {
+    const context = contextByTitle.get(sourceKey(item));
+    return context && context.length > item.summary.length ? { ...item, summary: context } : item;
+  });
 }
 
 export async function ingestPresidentialNews() {

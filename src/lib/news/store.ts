@@ -58,13 +58,14 @@ export async function saveNewsRun(input: {
   const db = getFirestoreDb();
   const batch = db.batch();
   for (const row of input.accepted) {
-    const { item, headline, teaser, people, topic } = row.news;
+    const { item, headline, teaser, body, people, topic } = row.news;
     const card = {
       url: item.url,
       source: item.source,
       publishedAt: item.publishedAt,
       headline,
       teaser,
+      body,
       topic,
       people,
       image: row.image,
